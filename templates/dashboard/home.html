@@ -1,0 +1,761 @@
+
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" /> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" defer></script>
+<style>
+    .select2-container{
+        width: 50%!important;
+    }
+   
+    .pagination li {
+        background-color: #007bff;
+        color: white;
+        padding: 4px 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius:3px;
+    }
+
+    .pagination li a {
+        color: white;
+    }
+
+    .pagination .active,
+    .pagination .disabled {
+        color: black;
+        background-color: #494d7c52;
+        cursor: auto;
+    }    
+</style>
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <!------------------------ multiple tabs with their multiple panels to manage all the data in a single page  -->
+    <div class="row tab">
+        <button class="tablinks" onclick="opennavbartabs(event, 'Dashboard')" id="defaultOpen">Dashboard</button>
+        <button class="tablinks" onclick="opennavbartabs(event, 'Attendance')">Staff Resource</button>
+       
+        {% if request.session.is_admin == True %}
+        <button class="tablinks" onclick="opennavbartabs(event, 'Settings')">Settings</button>
+        {% endif %}
+    </div>
+
+    {% comment %} dashboard content {% endcomment %}
+    <div id="Dashboard" class="tabcontent">
+        <div class="container-fluid">
+            {% if messages %}
+                <ul class="messages list-unstyled" id="msg_display">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }} font-weight-bold p-3 rounded" {% endif %}>
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                            <button type="button" class="close mr-3 mb-2 text-danger font-weight-bold" onclick="dismissFunction()">&times;</button>
+                            <span class="ml-3">{{ message }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <div class="row">
+                <!-- title -->
+                <div class="col-lg-9 col-md-6">
+                    <b>Workspaces</b> <span>({{len_work}})</span>
+                </div>
+                <!-- searchbox -->
+                <div class="col-lg-3 col-md-6">
+                    <input type="text" placeholder="Search Workspaces" id="searchTheKey" class="form-control">
+                </div>
+            </div>
+            <!-- content section -->
+
+            <div class="row" style="padding-top: 20px;">
+                <div class="col-lg-12">
+                    <div class="row" id="ul_id">
+                        {% for space in workspace %}
+                            <div class="wrapper">
+                                <a class="box" href="{% url 'workspace' space.slug %}">
+                                    <div class="box_insidediv">
+                                        <div class="col-lg-12">
+                                            <span class="user_txticon text-capitalize">{{space.name|first}}</span><br>
+                                            <p class="text-capitalize font-weight-bold p_text_call">{{space.name}}</p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <span>Task</span><br><span
+                                                    class="text-warning font-weight-bold">{{space.task_set.count}}</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <span>Issue</span><br><span
+                                                    class="text-danger font-weight-bold">{{space.issue_set.count}}</span>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row boxinside_div_footer">
+                                            <small>Members:</small> &nbsp;
+                                            {% for name in space.staff.all %}
+                                                <span class="member_circle text-capitalize" title="{{name.name|title}}">{{name.name|first}}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if workspace.has_other_pages %}
+                    <div class="col-12 text-right pull-right">
+                        <ul class="pagination justify-content-end">
+                            {% if workspace.has_previous %}
+                                <li><a href="?page={{ workspace.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in workspace.paginator.page_range %}
+                                {% if workspace.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                    <li class="to_select"><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if workspace.has_next %}
+                                <li><a href="?page={{ workspace.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% comment %} attendance content goes here {% endcomment %}
+    <div id="Attendance" class="tabcontent">
+        <!-- dashboard section -->
+        <div class="container-fluid">
+           
+            <div class="row">
+                <!-- title -->
+                <div class="col-md-12">
+                    <b>Manage Your Attendance & Leaves</b>
+                </div>
+                
+            </div>
+            <!-- content section -->
+
+            <div class="row" style="padding-top: 20px;">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <!-- box n -->
+                        <div class="wrapper">
+                            <a class="box" href="{% url 'attendance_home'%}" style="height:250px">
+                                <div class="box_insidediv">
+                                    <div class="col-lg-12">
+                                        <span class="user_txticon text-capitalize bg-primary"><i class="fa fa-calendar-plus-o"></i></span><br><br>
+                                        <h5 class="text-capitalize font-weight-bold">Attendance</h5>
+                                        <small class="font-weight-bold">This Month <br>
+                                            Full-day:
+                                            <span class="text-success mr-3">
+                                                {% if full_days_in_current_month != 0 %}
+                                                    {{full_days_in_current_month|stringformat:"02d"}}
+                                                {% else %}
+                                                    00
+                                                {% endif %}
+                                            </span>
+                                            Half-a-day:
+                                            <span class="text-success">
+                                                {% if half_days_in_current_month != 0 %}
+                                                    {{half_days_in_current_month|stringformat:"02d"}}
+                                                {% else %}
+                                                    00
+                                                {% endif %}
+                                            </span>                                            
+                                        </small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="wrapper">
+                            <a class="box" href="{% url 'attendance_home'%}" style="height:250px">
+                                <div class="box_insidediv">
+                                    <div class="col-lg-12">
+                                        <span class="user_txticon text-capitalize bg-primary"><i class="fa fa-leaf"></i></span><br><br>
+                                        <h5 class="text-capitalize font-weight-bold">Leave Balance</h5>
+                                        <small><span class="text-success font-weight-bold" title="Remained Leaves">
+                                            {% if bal_leaves %}{{bal_leaves|stringformat:"02d"}}{% else %}00{% endif %}</span> / <span class="text-dark font-weight-bold" title="Total leaves">24</span></small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="wrapper">
+                            <a class="box" href="{% url 'attendance_home' %}" style="height:250px">
+                                <div class="box_insidediv">
+                                    <div class="col-lg-12">
+                                    <span class="user_txticon text-capitalize bg-primary"><i class="fa fa-list-alt"></i></span><br><br>
+                                        <h5 class="text-capitalize font-weight-bold">Leave Requests</h5>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <small class="text-capitalize font-weight-bold">Approved</small><br>
+                                            <small class="text-success font-weight-bold">
+                                                {% if aproved_leaves %}{{aproved_leaves|stringformat:"02d"}}{% else %} 00 {% endif %}
+                                            </small>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <small class="text-capitalize font-weight-bold">Pending</small><br>
+                                            <small class="text-warning font-weight-bold">
+                                                {% if pending_leaves %}{{pending_leaves|stringformat:"02d"}}{% else %} 00 {% endif %}
+                                            </small>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <small class="text-capitalize font-weight-bold">Rejected</small><br>
+                                            <small class="text-danger font-weight-bold">
+                                                {% if rejected_leaves %}{{rejected_leaves|stringformat:"02d"}}{% else %} 00 {% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% comment %} settings content goes here {% endcomment %}
+    {% if request.session.is_admin == True %}
+    <div id="Settings" class="tabcontent">
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12" style="border-bottom: 1px solid #ccc;">
+                    <h5>Settings</h5>
+                </div>
+                <div class="settingtab">
+                    <!-- <button class="settingtablinks"
+                        onclick="opensettingtab_section(event, 'general_info')">General Information</button> -->
+                    <button class="settingtablinks active" onclick="opensettingtab_section(event, 'user_management')" id="defaultOpen">UserManagement</button>
+                    <!-- <button class="settingtablinks" onclick="opensettingtab_section(event, 'roles_permissions')">Roles &
+                        Permissions</button> -->
+                </div>
+                <!-- General info section -->
+                 <div id="general_info" class="settingtabcontent" style="display: none;">
+                    
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3" style="padding: 10px">
+                            <div style="width: 80px;height:80px;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                                <img class="img-center" src="" alt="Workspace logo" style="width: 80px;height:80px;">
+                            </div>
+
+                            <div>
+                                <div style="position:relative;cursor:pointer">
+                                    <span style="position:absolute;width:100%"><i class="fa fa-cloud-upload"></i>Upload
+                                        Photo</span>
+                                    <span style="z-index:9999;opacity:0;margin-top:-8px;position:absolute"><input
+                                            type="file" id="upload"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-lg-9 col-md-9" style="padding: 10px;">
+                            <a href="#" data-target="#editworkspace" data-toggle="modal"><b>Workspace
+                                    Name <i class="fa fa-pencil"></i></b></a><br>
+                            <small><a href="https://DITS Management.com">https://DITS Management.com</a></small><br>
+                            <input type="button" class="btn btn-primary" value="Delete Workspace">
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="settingtabcontent" id="user_management">
+                    <br>
+                    <h4>Invite Team Members to "Workspace"</h4>
+                    <form method="POST" action="/">
+                        {% csrf_token %}
+                        <div class="col-12 input-group mb-2">
+                            <!-- <input type="email" name="email" class="form-control" placeholder="Enter email adddress..." required> -->
+                            <select class="form-control customers" name="email" required>
+                                <option value="">Please select</option>
+                                {% for member in all_staff %}
+                                    <option value="{{member.email}}">{{member.email}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-12"><small>Select a workspace</small></div>
+                            <div class="col-12 input-group">
+                                <select class="form-control customers" name="workspace" required>
+                                    <option value="">Please select</option>
+                                    {% for space in workspace %}
+                                        <option value="{{space.id}}" class="text-capitalize">{{space.name}}</option>
+                                    {% endfor %}
+                                </select>    
+                            
+                            <span class="input-group-addon">
+                               <input type="submit" class="btn btn-secondary button-33" style="border-radius:0px;height:38px" value="Send Invite">
+                            </span>
+                        </div>
+                       
+                    </form>
+                    <!-- <hr>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+                        <div class="col-lg-4">
+                            <select name=" " id="" class="form-control">
+                                <option value="allusers">All Users</option>
+                                <option value="admin">Admin</option>
+                                <option value="member">Member</option>
+                                <option value="limited member">Limited Member</option>
+                                <option value="disableduser">Disabled User</option>
+                                <option value="enableduser">Enabled User</option>
+                            </select>
+                        </div>
+                    </div> -->
+                    <!-- <br> -->
+                    <!-- <hr> -->
+                    <!-- <div class="row">
+                        <div class="col-lg-8">
+                            <b>Sandeep yadav</b><br>
+                            <small>sandeepyadavjnp01@gmail.com</small>
+                        </div>
+                        <div class="col-lg-4 text-right">
+                            <select name="" id="" class="form-control">
+                                <option value="Admin">Admin</option>
+                                <option value="Admin">Member</option>
+                                <option value="Admin">Limited Member</option>
+                            </select>
+                        </div>
+                    </div> -->
+                </div>
+
+                <!-- Roles permissions section -->
+                <div  class="settingtabcontent" id="roles_permissions"  style="display: none;">
+                    <br>
+                    <div class="col-xs-10 col-sm-6 col-md-3 col-lg-3">
+                        <select name="" id="" class="form-control">
+                            <option value="Admin">Admin</option>
+                            <option value="Member">Member</option>
+                            <option value="LimitedMember">LimitedMember</option>
+                        </select>
+                    </div>
+                    <br><br>
+                    <div id="accordion">
+                        <div class="card">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne"
+                                aria-expanded="true" aria-controls="collapseOne">
+                                <div class="card-header bg-ard" id="headingOne">
+                                    <div class="text-left">
+                                        <span class="bg-gradient-primary text-white round_icon"><i
+                                                class="fa fa-fw fa-border-all"></i></span> Workspaces
+                                        <span class="option_right"><i class="fa fa-angle-right"></i></span>
+                                    </div>
+                                </div>
+                            </button>
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <ul>
+                                        <li><span>Workspace Setting</span> <span class="option_right">Allow</span>
+                                            <ul>
+                                                <li><span>General Information </span> <span
+                                                        class="option_right">Allow</span>
+                                                    <ul>
+                                                        <li><span>Workspace Image</span> <span class="option_right">Add
+                                                                Delete</span>
+                                                        </li>
+                                                        <li><span>Delete Workspace</span> <span
+                                                                class="option_right">Allow</span></li>
+                                                        <li><span>Workspace Name</span> <span
+                                                                class="option_right">Edit</span></li>
+                                                        <li><span>Workspce Url</span> <span
+                                                                class="option_right">Edit</span></li>
+                                                    </ul>
+                                                </li>
+
+                                                <li><span>Delete Workspace</span> <span
+                                                        class="option_right">Allow</span>
+                                                    <ul>
+                                                        <li><span>Add Members to Workspace</span> <span
+                                                                class="option_right">Allow</span>
+                                                        </li>
+                                                        <li><span>Remove Members from Workspace</span>
+                                                            <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li><span>Enable Members from Workspace</span>
+                                                            <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li><span>Disable Members in Workspace</span>
+                                                            <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li><span>Update Role in Workspace</span> <span
+                                                                class="option_right">Allow</span>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+
+                                                <li>Roles & Permission <span class="option_right">Allow</span>
+                                                    <ul>
+                                                        <li>Custom Role <a href="#">Add</a> Edit Delete
+                                                        </li>
+                                                        <li>Rename Custom Role <span class="option_right">Allow</span>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+
+                                                <li>Task Status <span class="option_right">Allow</span>
+                                                    <ul>
+                                                        <li>Create/Rename Template <span
+                                                                class="option_right">Allow</span></li>
+                                                        <li>Set Template as Workspace Default <span
+                                                                class="option_right">Allow</span></li>
+                                                        <li>Save as New Template <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li>Change Default Staus <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li>Change Done Status <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li>Delete Saved Template <span
+                                                                class="option_right">Allow</span></li>
+                                                        <li><span class="col-6">Template
+                                                                Status</span><span class="option_right">Add Edit
+                                                                Delete</span></li>
+                                                    </ul>
+                                                </li>
+
+                                            </ul>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+                                aria-expanded="false" aria-controls="collapseTwo">
+                                <div class="card-header" id="headingTwo">
+                                    <div class="text-left">
+                                        <span class="bg-gradient-primary text-white round_icon"><i
+                                                class="fa fa-fw fa-tasks"></i></span> Tasks
+                                        <span class="option_right"><i class="fa fa-angle-right"></i></span>
+                                    </div>
+                                </div>
+                            </button>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Task Details <span class="option_right">Allow</span>
+                                            <ul>
+                                                <li>Task Project <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Task Planned start/end date <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Task Actual start/end date <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Task Description <span class="option_right">Edit</span></li>
+                                                <li>ToDo List <span class="option_right">Add Edit
+                                                        Delete</span></li>
+                                                <li>Task Effort <span class="option_right">Add
+                                                        Delete</span></li>
+                                                <li>Task Estimation <span class="option_right">Add
+                                                        Delete</span></li>
+                                                <li>Repeat Task <span class="option_right">Add Edit
+                                                        Delete</span></li>
+                                                <li>Task Assignee <span class="option_right">Add
+                                                        Delete</span></li>
+                                                <li>Add Custom Fields <span class="option_right">Add
+                                                        Edit Delete</span></li>
+                                                <li>Task Documents <span class="option_right">Allow</span>
+                                                    <ul>
+                                                        <li>Delete Document <span class="option_right">Allow</span>
+                                                        <li>Open Folder <span class="option_right">Allow</span>
+                                                        <li>Rename Folder <span class="option_right">Allow</span>
+                                                        <li>View Document <span class="option_right">Allow</span>
+                                                        <li>Add Folder<span class="option_right">Allow</span>
+                                                        <li>Upload Document <span class="option_right">Allow</span>
+                                                        <li>Download Document <span class="option_right">Edit</span>
+                                                    </ul>
+                                                </li>
+                                                <li>Task Comments <span class="option_right">Allow</span>
+                                                    <ul>
+                                                        <li>Task Attachments <span class="option_right">Add
+                                                                Delete</span>
+                                                        </li>
+                                                        <li>Add Comments <span class="option_right">Add
+                                                                Edit Delete</span></li>
+                                                        <li>Convert Comment to Task <span
+                                                                class="option_right">Allow</span></li>
+                                                        <li>Show Receipt <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li>Clear all Replies <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li>Clear Reply <span class="option_right">Allow</span></li>
+                                                        <li>View Attachment <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li>Download Attachment <span class="option_right">Allow</span>
+                                                        </li>
+                                                        <li>Reply Later <span class="option_right">Allow</span></li>
+                                                        <li>Reply <span class="option_right">Allow</span></li>
+                                                    </ul>
+                                                </li>
+
+                                                <li>Task Name <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Task Priority <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Create repeat task occurrences <span
+                                                        class="option_right">Allow</span></li>
+                                                <li>Task Staus <span class="option_right">Edit</span>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>Create Task <span class="option_right">Allow</span>
+                                        <li>View all Tasks <span class="option_right">Allow</span>
+                                        <li>Import Tasks <span class="option_right">Allow</span>
+                                        <li>Export Tasks <span class="option_right">Allow</span>
+                                        <li>Archive Tasks <span class="option_right">Allow</span>
+                                        <li>Unarchived Tasks <span class="option_right">Allow</span>
+                                        <li>Delete Tasks <span class="option_right">Allow</span>
+                                        <li>Copy Task within Workspace <span class="option_right">Allow</span>
+                                        <li>Set color <span class="option_right">Allow</span></li>
+                                        <li>Create public link of task <span class="option_right">Allow</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"
+                                aria-expanded="false" aria-controls="collapseThree">
+                                <div class="card-header" id="headingThree">
+                                    <div class="text-left">
+                                        <span class="bg-gradient-primary text-white round_icon"><i
+                                                class="fa fa-fw fa-calendar"></i></span> Meetings
+                                        <span class="option_right"><i class="fa fa-angle-right"></i></span>
+                                    </div>
+                                </div>
+                            </button>
+                            <div id="collapseThree" class="collapse" aria-labelledby="headingThree"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Meeting Details <span class="option_right">Allow</span>
+                                            <ul>
+                                                <li>Meeting Agenda <span class="option_right">Add Edit
+                                                        Delete</span></li>
+                                                <li>Meeting discussion notes <span class="option_right">Add
+                                                        Delete</span></li>
+                                                <li>Meeting followyp actions <span class="option_right">Add Edit
+                                                        Delete</span></li>
+                                                <li>Meeting key decisions <span class="option_right">Add
+                                                        Edit Delete</span></li>
+                                                <li>Repeat Meeting <span class="option_right">Add Edit
+                                                        Delete</span></li>
+                                                <li>Meeting date <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Meeting task <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Meeting duration <span class="option_right">Edit</span></li>
+                                                <li>Meeting location <span class="option_right">Edit</span></li>
+                                                <li>Meeting attendee <span class="option_right">Add
+                                                        Delete</span></li>
+                                                <li>Add custom fields<span class="option_right">Add Edit
+                                                        Delete</span></li>
+                                                <li>Meeting name<span class="option_right">Edit</span>
+                                                </li>
+                                                <li>meeting submit for review<span class="option_right">Allow</span>
+                                                </li>
+                                                <li>Publish meeting<span class="option_right">Allow</span></li>
+                                                <li>Create repeat meeting occurrences<span
+                                                        class="option_right">Allow</span></li>
+                                                <li>Meeting time<span class="option_right">Edit</span>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li>Create meeting<span class="option_right">Allow</span></li>
+                                        <li>View all meetings<span class="option_right">Allow</span>
+                                        </li>
+                                        <li>Import meeting<span class="option_right">Allow</span></li>
+                                        <li>Export meeting<span class="option_right">Allow</span></li>
+                                        <li>Archive meeting<span class="option_right">Allow</span></li>
+                                        <li>Unarchive meeting<span class="option_right">Allow</span>
+                                        </li>
+                                        <li>Delete meeting<span class="option_right">Allow</span></li>
+                                        <li>Cancel meeting<span class="option_right">Allow</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour"
+                                aria-expanded="false" aria-controls="collapseFour">
+                                <div class="card-header" id="headingThree">
+                                    <div class="text-left">
+                                        <span class="bg-gradient-primary text-white round_icon"><i
+                                                class="fa fa-fw fa-receipt"></i></span> Issues
+                                        <span class="option_right"><i class="fa fa-angle-right"></i></span>
+                                    </div>
+                                </div>
+                            </button>
+                            <div id="collapseFour" class="collapse" aria-labelledby="headingThree"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Issue Details <span class="option_right">Allow</span>
+                                            <ul>
+                                                <li>Issue task <span class="option_right">Add
+                                                        Edit</span></li>
+                                                <li>Issue planned start/end date <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Issue actual start/end date <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Issue Description <span class="option_right">Edit</span></li>
+                                                <li>Issue Type <span class="option_right">Edit</span>
+                                                </li>
+                                                <li>Issue assignee <span class="option_right">Add
+                                                        Delete</span></li>
+                                        </li>
+                                        <li>Add Custom fields <span class="option_right">Add Edit
+                                                Delete</span></li>
+                                        </li>
+
+                                        <li>Issue comments/updates <span class="option_right">Allow</span></li>
+                                        <ul>
+                                            <li>Issue Attachment <span class="option_right">Add
+                                                    Delete</span></li>
+                                            <li>Add comments<span class="option_right">Add Edit
+                                                    Delete</span></li>
+                                            </li>
+                                            <li>Convert comment to task<span class="option_right">Allow</span></li>
+                                            </li>
+                                            <li>Show receipt<span class="option_right">Allow</span></li>
+                                            </li>
+                                            <li>Clear all replies<span class="option_right">Allow</span>
+                                            </li>
+                                            </li>
+                                            <li>Clear reply<span class="option_right">Allow</span></li>
+                                            </li>
+                                            <li>View attachment<span class="option_right">Allow</span>
+                                            </li>
+                                            </li>
+                                            <li>Download attachment<span class="option_right">Allow</span></li>
+                                            </li>
+                                            <li>Reply later<span class="option_right">Allow</span></li>
+                                            </li>
+                                            <li>Reply<span class="option_right">Allow</span></li>
+                                            </li>
+                                        </ul>
+                                        </li>
+                                        <li>Issue Documents <span class="option_right">Allow</span></li>
+                                        <ul>
+                                            <li>Delete document<span class="option_right">Allow</span>
+                                            </li>
+                                            <li>Open folder<span class="option_right">Allow</span></li>
+                                            <li>Rename folder<span class="option_right">Allow</span>
+                                            </li>
+                                            <li>View document<span class="option_right">Allow</span>
+                                            </li>
+                                            <li>Add folder<span class="option_right">Allow</span></li>
+                                            <li>Upload document<span class="option_right">Allow</span>
+                                            </li>
+                                            <li>Download document<span class="option_right">Allow</span>
+                                            </li>
+                                        </ul>
+                                        </li>
+                                        <li>Issue name <span class="option_right">Edit</span></li>
+                                        <li>Issue status <span class="option_right">Edit</span></li>
+                                        <li>Issue priority <span class="option_right">Edit</span></li>
+                                        <li>Issue severity <span class="option_right">Edit</span></li>
+                                    </ul>
+                                    </li>
+
+                                    <li>Create issue <span class="option_right">Allow</span></li>
+                                    <li>View all issues <span class="option_right">Allow</span></li>
+                                    <li>Import issues <span class="option_right">Allow</span></li>
+                                    <li>Export issues <span class="option_right">Allow</span></li>
+                                    <li>Archive issues <span class="option_right">Allow</span></li>
+                                    <li>Unarchive issues <span class="option_right">Allow</span></li>
+                                    <li>Delete issues <span class="option_right">Allow</span></li>
+                                    <li>Set color <span class="option_right">Allow</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <button class="btn btn-link collapsed" style="text-decoration-style: none;"
+                                data-toggle="collapse" data-target="#collapseFive" aria-expanded="false"
+                                aria-controls="collapseFive">
+                                <div class="card-header" id="headingThree">
+                                    <div class="text-left">
+                                        <span class="bg-gradient-primary text-white round_icon"><i
+                                                class="fa fa-fw fa-clock"></i></span> Timesheet
+                                        <span class="option_right"><i class="fa fa-angle-right"></i></span>
+                                    </div>
+                                </div>
+                            </button>
+                            <div id="collapseFive" class="collapse" aria-labelledby="headingThree"
+                                data-parent="#accordion">
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Add task <span class="option_right">Allow</span></li>
+                                        <li>Add time entry <span class="option_right">Allow</span></li>
+                                        <li>Delete time entry <span class="option_right">Allow</span>
+                                        </li>
+                                        <li>Delete timesheet <span class="option_right">Allow</span>
+                                        </li>
+                                        <li>Sunmit timesheet for approval <span class="option_right">Allow</span>
+                                        </li>
+                                        <li>send timesheet <span class="option_right">Allow</span></li>
+                                        <li>Add notes <span class="option_right">Allow</span></li>
+                                        <li>Accept timesheet <span class="option_right">Allow</span>
+                                        </li>
+                                        <li>Reject timesheet <span class="option_right">Allow</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#searchTheKey").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#ul_id div p").filter(function() {
+                if ($(this).text().toLowerCase().indexOf(value) == -1){
+                    $(this).parent().parent().parent().parent().addClass('inactive');
+                    $(this).parent().parent().parent().parent().removeClass('active');
+                    $(".inactive").hide();
+                }
+                else{
+                    $(this).parent().parent().parent().parent().addClass('active');
+                    $(this).parent().parent().parent().parent().removeClass('inactive');
+                    $('.active').show();
+                }
+            });
+        });
+    });
+</script> 
+<script>
+    $(document).ready(function(){
+        $(".customers").select2();
+    });
+</script>
+{% endblock %}

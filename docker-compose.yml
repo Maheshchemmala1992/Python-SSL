@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8.0
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: dits_hrms
+      MYSQL_USER: dits
+      MYSQL_PASSWORD: i&Ma3t7%0Ee#a
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=dits_hrms
+      - DB_USER=dits
+      - DB_PASSWORD=i&Ma3t7%0Ee#a
+
+volumes:
+  mysql_data:

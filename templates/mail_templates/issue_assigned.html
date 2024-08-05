@@ -1,0 +1,71 @@
+<html>
+
+<head>
+
+</head>
+<body>
+       <div style="width:100%;background-color:whitesmoke;height:auto;padding:5px;font-family: Arial, Helvetica, sans-serif;">
+         <div style="width:100%;text-align:center">
+                <h5>task <br /> manager</h5>
+            </div>
+        </div>
+        <div style="font-style:sans-serrif;max-width:500px;margin:0px auto;">
+            <div style="padding:30px;margin-top:10px;max-width:500px;margin:0px auto;margin:bottom:10px;border-top:3px solid limegreen;font-size:14px;background-color:#fff;box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;">
+                <div>
+                    <div style="width:100%;">
+                        <h2 style="text-align:center">New Issue Raised for you</h2>
+                    </div>
+                    <hr style="border:1px solid whitesmoke;padding:0;margin:3px">
+                    <h3>Hey {{name}},</h3>
+                    <p>New Issue raised for you. </p>
+
+                    <div style="border:1.5px solid #ccc;width:100%;margin-top:20px">
+                        <div
+                            style="background-color:whitesmoke;padding-top:2px;padding-bottom:3px;border-bottom:1px solid #ccc">
+                            <div style="width:100%;padding:5px"><b
+                                    style="color:rgba(0, 0, 0, 0.5);">Team:</b>&nbsp;<span>{{team}}
+                                    &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><b
+                                    style="color:rgba(0, 0, 0, 0.5);">Workspace:</b>&nbsp;<span>{{workspace}}</span></div>
+                        </div>
+
+                        <div style="padding:5px;width:100%">
+                            <!-- <div style="width:100%;margin-top:5px"><b style="color:rgba(0, 0, 0, 0.5);">Project:
+                                </b>&nbsp; <span>project name</span></div> -->
+                            <div style="width:100%;margin-top:5px"><b style="color:rgba(0, 0, 0, 0.5);">Task: </b>&nbsp;
+                                <span><a href="#">{{task}}</a></span></div>
+                        </div>
+                        <hr style="padding:0;margin:3px">
+                        <div style="font-size:13px;padding:5px;width:100%">
+                            <span style="width:33%;"><span style="color:#aaa;font-weight:400"> End Date:- </span> <span
+                                    style="color:red;font-weight:600">{{end_date}}</span></span>
+                            <span style="width:33%;">
+                                <span style="color:#aaa;font-weight:400">&nbsp;&nbsp; Status:</span> 
+                                <span style="color:rgba(0, 0, 0, 0.5);font-weight:600">
+                                    {{status}}
+                                </span>
+                            </span>
+                            <span style="width:33%;">
+                                <span style="color:#aaa;font-weight:400">&nbsp;&nbsp; Priority:</span> 
+                                <span style="color:rgba(0, 0, 0, 0.5);font-weight:600">
+                                    {{priority}}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="width:100%;">
+                        <div style="width:100%;padding-top:10px">
+                            <a href="{{url}}" target="_blank" class="button-33 btn btn-primary">Start collaborating here</a>
+                        </div>
+
+                        <div style="width:100%;padding-top:30px;padding-bottom:10px">
+                            <span>Cheers,</span><br />
+                            <span style="background-color:#F9C47E">TaskManager</span><span> Team</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

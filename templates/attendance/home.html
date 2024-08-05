@@ -1,0 +1,807 @@
+{% load static %}
+<html>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
+<!-- data tables cdn-->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.1.0/css/dataTables.dateTime.min.css">
+
+<link href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round" rel="stylesheet">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="{%static 'css/style.css'%}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<!-- jQuery library -->
+<!-- font awesome cdn -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style>
+    .lesschar {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+    .dataTables_length{
+        margin-top: 7px;
+    }
+    .dt-buttons{
+        margin-bottom: 10px;
+        margin-right: 7px;
+    }
+    .buttons-csv{
+        text-align: center!important;
+        color: white!important;
+        width: 90px;
+        height: 40px;
+        background: #5d9c53!important;
+        border: 1px solid #5d9c53!important;
+        box-shadow: 4px 4px 4px 0px rgb(13 69 61);
+    }
+    .buttons-pdf{
+        text-align: center!important;
+        color: white!important;
+        width: 90px;
+        height: 40px;
+        background: #17a2b8!important;
+        border: 1px solid #17a2b8!important;
+        box-shadow: 4px 4px 4px 0px rgb(13 69 61);
+    }    
+    #loading {
+        position: fixed;
+        display: block;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        text-align: center;
+        background-color: rgb(255, 255, 255);
+        z-index: 99;
+    }
+
+    #loading-image {
+        position: absolute;
+        top: 6%;
+        left: 20%;
+        z-index: 100;
+    }   
+    body {
+        font-family: 'Varela Round', sans-serif;
+    }
+
+    .modal-confirm {
+        color: #636363;
+        width: 400px;
+        margin: 30px auto;
+    }
+
+    .modal-confirm .modal-content {
+        padding: 20px;
+        border-radius: 5px;
+        border: none;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .modal-confirm .modal-header {
+        border-bottom: none;
+        position: relative;
+    }
+
+    .modal-confirm h4 {
+        text-align: center;
+        font-size: 26px;
+        margin: 30px 0 -10px;
+    }
+
+    .modal-confirm .close {
+        position: absolute;
+        top: -5px;
+        right: -2px;
+    }
+
+    .modal-confirm .modal-body {
+        color: #999;
+    }
+
+    .modal-confirm .modal-footer {
+        border: none;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 13px;
+        padding: 10px 15px 25px;
+    }
+
+    .modal-confirm .modal-footer a {
+        color: #999;
+    }
+
+    .modal-confirm .icon-box {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        border-radius: 50%;
+        z-index: 9;
+        text-align: center;
+        border: 3px solid #f15e5e;
+    }
+
+    .modal-confirm .icon-box i {
+        color: #f15e5e;
+        font-size: 46px;
+        display: inline-block;
+        margin-top: 13px;
+    }
+
+    .modal-confirm .btn {
+        color: #fff;
+        border-radius: 4px;
+        background: #60c7c1;
+        text-decoration: none;
+        transition: all 0.4s;
+        line-height: normal;
+        min-width: 120px;
+        border: none;
+        min-height: 40px;
+        border-radius: 3px;
+        margin: 0 5px;
+        outline: none !important;
+    }
+
+    .modal-confirm .btn-info {
+        background: #c1c1c1;
+    }
+
+    .modal-confirm .btn-info:hover,
+    .modal-confirm .btn-info:focus {
+        background: #a8a8a8;
+    }
+
+    .modal-confirm .btn-danger {
+        background: #f15e5e;
+    }
+
+    .modal-confirm .btn-danger:hover,
+    .modal-confirm .btn-danger:focus {
+        background: #ee3535;
+    }
+
+    .trigger-btn {
+        display: inline-block;
+        margin: 100px auto;
+    }
+</style>
+
+<div id="loading">
+    <img id="loading-image" src="https://i.pinimg.com/originals/ac/14/0a/ac140a627af854f14c7f653efd7d53ae.gif" alt="Loading..." />
+</div>	    
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <!-- back button -->
+
+            <div class="text-center d-md-inline">
+                <a href="/" class="btn btn-secondary">
+                    <i class="fa fa-chevron-left"></i>&nbsp; back
+                </a>
+            </div>
+
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+                <div class="topbar-divider d-none d-sm-block"></div>
+                <!-- Add new button -->
+                <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle btn btn-success btn-sm text-white" href="#"
+                        id="newbuttonDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <i class="fa fa-plus text-white"></i>&nbsp; Add
+                    </a>
+                    <!-- Dropdown - User Information -->
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                        aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#new_attendance">
+                            <i class="fa fa-calendar-plus-o fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Add Attendance
+                        </a>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#apply_leaves">
+                            <i class="fa fa-envelope-o fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Apply for Leave
+                        </a>
+                        {% if request.session.is_admin == True %}
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#add_holidays">
+                            <i class="fa fa-calendar-plus-o fa-sm fa-fw mr-2 text-gray-400" aria-hidden="true"></i>
+                            Add Holiday
+                        </a>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- End of Topbar -->
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <!--alert message here-->
+    {% if messages %}
+        <ul class="messages list-unstyled" id="msg_display">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }} font-weight-bold p-3 rounded" {% endif %}>
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                    <button type="button" class="close mr-3 mb-2 text-danger font-weight-bold" onclick="dismissFunction()">&times;</button>
+                    <span class="ml-3">{{ message }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="attendance-tab" data-toggle="tab" href="#attendance" role="tab"
+                aria-controls="Attendance" aria-selected="true">Attendance</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="leaves-tab" data-toggle="tab" href="#leave" role="tab" aria-controls="leave"
+                aria-selected="false">Leaves</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="holiday-tab" data-toggle="tab" href="#holiday" role="tab" aria-controls="holiday"
+                aria-selected="false">Holidays</a>
+        </li>
+    </ul>
+
+    <div class="tab-content bg-white p-2 mt-0" id="myTabContent">
+
+        <!-- attendace list table -->
+        <div class="tab-pane fade show active" id="attendance" role="tabpanel" aria-labelledby="attendance-tab">
+            <label for="" class="mt-3">Date filter</label>
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <label for="">From:</label>
+                    <input type="text" id="min" name="min">
+                </div>
+                <div class='col-lg-4 col-md-4 col-sm-4'>
+                    <label for="">To:</label>
+                    <input type="text" id="max" name="max">
+                </div>
+            </div>
+            <hr>
+<div class="col-12 table table-responsive">
+            <table id="attendance_table" style="font-size:14px" class="table w-100 table-striped table-bordered">
+                <thead>
+                    <tr class="text-uppercase bg-success text-center" style="font-size:12px">
+                        <th style="display: none;">#</th>
+                        <th>Date</th>
+                        <!-- <th>EmpName</th> -->
+                        <!-- <th>Attendance-Type</th> -->
+                        <!-- <th>Attendance-By</th> -->
+                        <th>In-Time</th>
+                        <th>Out-Time</th>
+                        <th>Productive Hours</th>
+                        <th>Type</th>
+                        <!-- <th>(E)In-Time</th> -->
+                        <!-- <th>(E)Out-Time</th> -->
+                        <!-- <th>Status</th> -->
+                        <!-- <th>Action</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in obj %}
+                    <tr class="text-capitalize text-center">
+                        <td style="display: none;">{{object.id}}</td>
+                        <td>{{object.in_time|date:'Y/m/d'}}</td>
+                        <!-- <td title="employee name">
+                            <p class="lesschar">Sandeep yadav</p>
+                        </td> -->
+                        <!-- <td>In-Office</td> -->
+                        <!-- <td>Self</td> -->
+                        <td>{{object.in_time|date:'H:i'}}</td>
+                        <td>{% if object.out_time %}{{object.out_time|date:'H:i'}}{% else %}-{% endif %}</td>
+                        <td>{% if object.hours_worked %}
+                                {{object.hours_worked|stringformat:"02d"}}:{{object.minutes_worked|stringformat:"02d"}}
+                            {% else %}-{% endif %}
+                        </td>
+                        <td>{% if object.day_type != None %}{{object.day_type}}{% else %}-{% endif %}</td>                        
+                        <!-- <td>00:00 PM</td> -->
+                        <!-- <td>00:00 PM</td> -->
+                        <!-- <td>
+                            <p class="text-success font-weight-bold" title="Present">P</p>
+                        </td>
+                        <td>
+                            <a href="#deletemodal" data-toggle="modal" class="btn btn-danger btn-sm"><i
+                                    class="fa fa-trash"></i></a>
+                        </td> -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+</div>
+        </div>
+
+        <!-- leaves list table -->
+        <div class="tab-pane fade" id="leave" role="tabpanel" aria-labelledby="leaves-tab">
+            <div class="table table-responsive">
+                <table id="leave_table" style="font-size:14px" class="table w-100 table-striped table-bordered">
+                    <thead>
+                        <tr class="text-uppercase text-center bg-success" style="font-size:12px">
+                            <th style="display: none;">id</th>
+                            <!-- <th>#</th> -->
+                            <th>Applied on</th>
+                            <th>Leave-Type</th>
+                            <th>No.of Days</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <!-- <th>Action</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for leave in leaves %}
+                        <tr class="text-capitalize text-center">
+                            <td style="display: none;">{{leave.id}}</td>
+                            <!-- <td>{{forloop.counter}}</td> -->
+                            <td>{{leave.created_on|date:'d-M-Y'}}</td>
+                            <td>{{leave.type}}</td>
+                            <td>{{leave.number_of_days|stringformat:"02d"}}</td>
+                            <td>{{leave.from_date}}</td>
+                            <td>{{leave.to_date}}</td>
+                            <td>{{leave.descritpion}}</td>
+                            <td>
+                                {% if not request.session.is_admin == True %}
+                                    {{leave.leave_status}}
+                                {% else %}
+                                    <select class="form-control" id="leave_status_{{leave.id}}" onchange="leave_status_change({{leave.id}})">
+                                        <option value="Pending" {% if leave.leave_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                        <option value="Approved" {% if leave.leave_status == 'Approved' %}selected{% endif %}>Approve</option>
+                                        <option value="Rejected" {% if leave.leave_status == 'Rejected' %}selected{% endif %}>Reject</option>
+                                    </select>
+                                {% endif %}
+                            </td>
+                           <!-- <td>
+                                <a href="#deletemodal" data-toggle="modal" class="btn btn-danger btn-sm">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td> -->
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- holiday list table -->
+        <div class="tab-pane fade" id="holiday" role="tabpanel" aria-labelledby="holiday-tab">
+            <div class="row">
+                <div class="col-12">
+                <table id="holiday_table" style="font-size:14px" class="table w-100 table-striped table-bordered">
+                    <thead>
+                        <tr class="text-uppercase text-center bg-success" style="font-size:12px">
+                            <th style="display: none;">Date Created</th>
+                            <th>Title</th>
+                            <th>Day & Month</th>
+                            <!-- <th>Description</th> -->
+                            {% if request.session.is_admin == True %}
+                                <th>Action</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for holi in holidays %}
+                        <tr class="text-capitalize text-center">
+                            <td style="display: none;">{{holi.created_on}}</td>
+                            <td>{{holi.name}}</td>
+                            <td>{{holi.day}}th of {{holi.month}}</td>
+                            <!-- <td>{{holi.description}}</td> -->
+                            {% if request.session.is_admin == True %}
+                            <td>
+                                <a href="{% url 'holiday_delete' holi.id %}" title="delete this row" class="btn btn-danger btn-sm del-btn">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <script>
+    $('.delete_task').on('click', function (e) {
+        action = confirm('Are you sure to remove...!')
+        if (action == false) {
+            e.preventDefault();
+        } else {
+            location.reload();
+        }
+    })
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script> -->
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script rel="text/javascript"
+    src="https://cdn.datatables.net/tabletools/2.2.4/js/dataTables.tabletools.min.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/datetime/1.1.0/js/dataTables.dateTime.min.js"></script>
+
+<script>
+    $('#leave_table').DataTable({
+        "order": [[ 0, "desc" ]],
+        dom: 'Blfrtip',
+        buttons: [
+            'csv', 'pdf'
+        ]
+    });
+</script>
+<script>
+    var minDate, maxDate;
+    
+    // Custom filtering function which will search data in column four between two values
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            var min = minDate.val();
+            var max = maxDate.val();
+            var date = new Date( data[0]);
+    
+            if (
+                ( min === null && max === null ) ||
+                ( min === null && date <= max ) ||
+                ( min <= date   && max === null ) ||
+                ( min <= date   && date <= max )
+            ) {
+                return true;
+            }
+            return false;
+        }
+    );
+
+    $(document).ready(function() {
+        // Create date inputs
+        minDate = new DateTime($('#min'), {
+            format: 'DD-MM-YYYY'
+        });
+        maxDate = new DateTime($('#max'), {
+            format: 'DD-MM-YYYY'
+        });
+    
+        // DataTables initialisation
+        var table = $('#attendance_table').DataTable({
+            dom: 'Blfrtip',
+            "order": [[ 0, "desc" ]],
+            buttons: [  
+                'csv', 'pdf',
+            ]
+        });
+    
+        // Refilter the table
+        $('#min, #max').on('change', function () {
+            table.draw();
+        });
+    });
+</script>
+
+<script>
+        $('#holiday_table').DataTable({
+            "order": [[ 0, "desc" ]],
+            dom: 'Blfrtip',
+            buttons: [
+               'csv', 'pdf'
+            ]
+        });
+</script>
+
+<!-------------------------------------The Modal to add attendance---------------------------------- -->
+<div class="modal" id="new_attendance">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Attendance for <span id="today_date_attendace" class="text-danger"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <!-- <div class="row"> -->
+                <div class="col-md-12 col-lg-12 col-sm-12">
+                    <form action="{% url 'attendance_check_in' %}" method="POST">
+                        {% csrf_token %}
+                        <input type='hidden' name="in_time" class="form-control" id="in_time"/>
+                        <input type="submit" value="CHECK IN" 
+                        class="btn{% if in_current_day != 'none' %} btn-secondary{% else %} btn-success{% endif %} w-100" 
+                        {% if in_current_day != 'none' %} disabled {% endif %}/>
+                    </form>
+                </div>
+                <div class="col-md-12 col-lg-12 col-sm-12 mt-3">
+                    <form action="{% url 'attendance_check_out' %}" method="POST">
+                        {% csrf_token %}
+                        <input type='hidden' name="out_time" class="form-control" id="out_time"/>
+                        <input type="submit" 
+                        value="CHECK OUT" 
+                        class="btn{% if out_current_day != 'none' or in_current_day == 'none' %} btn-secondary{% else %} btn-success{% endif %} w-100" 
+                        {% if out_current_day != 'none' or in_current_day == 'none' %} disabled {% endif %}/>
+                    </form>
+                </div>
+                <!-- </div> -->
+            </div>
+        </div>
+        <!-- modal footer -->
+    </div>
+</div>
+
+<!-------------------------------------The Modal to apply leaves---------------------------------- -->
+<div class="modal" id="apply_leaves">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Apply for Leave/s <span id="today_date_leaves" class="text-danger"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="{% url 'leave_apply' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label>Leave Type*</label>
+                            <select name="type" class="form-control" required>
+                                <option value="">Please select</option>
+                                <option value="sick">Sick</option>
+                                <option value="casual">Casual</option>
+                                <option value="compensatory">Compensatory</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label>No. of Days*</label>
+                            <input type="text" name="number_of_days" class="form-control" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>From Date*</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="calender_icon">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                <input type="date" name="from_date" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>To Date*</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+                                            aria-hidden="true"></i></span>
+                                </div>
+                                <input type="date" name="to_date" class="form-control" aria-label="date"
+                                    aria-describedby="calender_icon" required>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Reason*</label>
+                            <textarea rows="3" name="descritpion" class="form-control" required></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="submit" class="btn btn-primary w-100" value="Apply for Leave">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- modal footer -->
+        </div>
+    </div>
+</div>
+
+<!-------------------------------------The Modal to add holidays---------------------------------- -->
+<div class="modal" id="add_holidays">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add Holiday <span id="today_date_holidays" class="text-danger"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="{% url 'holiday' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="row" id="first_innings_content">
+                        <div class="col-lg-12 mb-3">
+                            <label>Title*</label>
+                            <input type="text" placeholder="" name="name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Day*</label>
+                            <select class="form-control" name="day" required>
+                                <option value="">Please select</option>
+                                <option value="01">01</option>
+                                <option value="02">02</option>
+                                <option value="03">03</option>
+                                <option value="04">04</option>
+                                <option value="05">05</option>
+                                <option value="06">06</option>
+                                <option value="07">07</option>
+                                <option value="08">08</option>
+                                <option value="09">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                                <option value="31">31</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Month*</label>
+                            <select class="form-control" name="month" required>
+                                <option value="">Please select</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="">Plannings/description</label>
+                            <textarea name="description" rows="2" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <input type="submit" class="btn btn-primary w-100" value="Add Holiday">
+                </form>
+            </div>
+            <!-- modal footer -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal HTML to delete -->
+
+<!-- <div id="deletemodal" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon-box">
+                    <i class="material-icons">&#xE5CD;</i>
+                </div> <br>
+                <h4 class="modal-title">Are you sure?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete this record? This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                <a type="button" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<script>
+    // to pass date time into input field of in_time of attendance field.
+    var today_date = new Date();
+    var day = today_date.getDate();
+    var month = today_date.getMonth() + 1;
+    var year = today_date.getFullYear();
+    var date_string = year + "-" + month + "-" + day + "T" + today_date.getHours() + ":" + today_date.getMinutes();
+
+    var month_today = today_date.toLocaleString('default', { month: 'short' });
+    var display_date = month_today + ' ' + ('0'+day).slice(-2) + ", " + year + '.'
+    document.getElementById("in_time").value = date_string;
+    document.getElementById("today_date_attendace").innerHTML = display_date;
+    document.getElementById("today_date_leaves").innerHTML = display_date;
+    document.getElementById("today_date_holidays").innerHTML = display_date;
+</script>
+
+<script>
+    // to pass date time into input field of  out_time of attendace field.
+    var todaydate = new Date();
+    var day = todaydate.getDate();
+    var month = todaydate.getMonth() + 1;
+    var year = todaydate.getFullYear();
+    var datestring = year + "-" + month + "-" + day + "T" + todaydate.getHours() + ":" + todaydate.getMinutes();
+    document.getElementById("out_time").value = datestring;
+</script>
+
+<script>
+    function leave_status_change(id) {
+    var leave_status = $("#leave_status_" + id).val()
+    var action = confirm("Are you sure to change the status...?")
+    if (action == true) {
+        $.ajax({
+            type: "GET",
+            url: `/leave-status`,
+            data: {'id': id, 'leave_status': leave_status},
+            success: function (data) {
+                location.reload();
+            },
+            error: function () {
+                alert('error')
+            }
+        });
+    } else {
+        // id.preventDefault();
+        location.reload();
+    }
+}
+</script>
+
+<script>
+    $('.del-btn').on('click', function(e){
+        var action = confirm('Are you sure to delete...');
+        if(action==false){
+            e.preventDefault()
+        }else{
+            location.reload()
+        }
+    })
+</script>
+
+<script>
+    $(window).on('load', function () {
+      $('#loading').delay(1000).fadeOut();
+    })
+</script>
+<script>
+	function dismissFunction() {
+	  document.getElementById("msg_display").style.display = "none";
+	}
+</script>  
+</html>

@@ -1,0 +1,208 @@
+
+
+/* Main stylesheet */
+body{background-color: whitesmoke;}
+::placeholder{font-size: small;color:#aaa;font-weight: 600;}
+
+a{color: #292929;}
+a:hover{text-decoration: none;color: forestgreen;}
+
+.tracking_navlink{border-bottom: 1px solid #ccc;border-top: 1px solid #ccc;}
+
+/* -----------------------
+scrollbar start
+--------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+
+/* alert notification */
+.mx-1 ::-webkit-scrollbar {
+  width: 0px;
+  }
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: #4e73df;
+  background-image: linear-gradient(
+180deg,#4e73df 10%,#224abe 100%);
+  background-size: cover;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(34, 74, 190, 0.3);
+}
+/* -----------------------
+scrollbar end
+--------------------------- */
+.wrapper{
+  min-width: 299px;
+  width:25%;
+  display: flex;
+  flex-wrap: wrap;
+  padding:10px;
+  align-content: center;
+}
+.box{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  padding:10px;
+  align-content: center;
+  margin: 0px;
+  background-color: white;
+  height: 316px;
+  border: 1px dashed #ccc;
+  border-radius:5px;
+  text-align:center;
+}
+
+  .box:hover{
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    border:1px solid #ccc;
+}
+
+#addworkspace{color:#aaa}
+#addworkspace:hover{color:#000}
+.box_insidediv{margin: 0px auto;}
+/* .box_insidediv i{font-size: 40px;margin-bottom: 15px;} */
+
+.boxinside_div_footer{
+  margin-top:10px;border-top:1px solid #ccc;padding-top:10px;width:100%;position: relative;display: inline;;
+}
+.topnavabr_noti_icon{
+  color: #aaa;
+
+}
+.user_txticon{
+  font-size: 27px;
+  font-weight: 500;
+  height: 49px;
+  width: 52px;
+  padding-top: 5px;
+  border-radius: 50%;
+  color:#ccc;
+  font-weight:800;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  display: inline-block;
+  background-color: #d2f4e8;;
+}
+.team_txticon{
+  padding-top: 2px;
+  font-size: 20px;
+  font-weight: 600;
+  color:#fff;
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: deepskyblue;
+}
+#addnewbtn_wrapbox{
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  margin-top:12px;
+}
+
+#noticon_wrapbox{
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        margin-top:12px;
+}
+
+#usercon_wrapbox{
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  margin-top:17px;
+}
+
+
+.topnavbar_profileicon{
+ width: 35px;
+ height:35px;
+ background-color:deepskyblue;
+ text-align: center;
+ color: #fff;
+ padding-top:3px;
+ border-radius: 50%;
+ font-size: 18px;
+}
+.topnavbar_profileicon:hover{color:#fff;
+  background-color: forestgreen;}
+
+.btn-round{border-radius:50px;padding:8px 15px 8px 15px}
+
+.member_circle{
+  font-size: 14px;
+  font-weight: 700;
+  height: 30px;
+  width: 30px;
+  padding-top: 5px;
+  margin-right:-12px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;;
+  background-color: #4e73df;
+  color: #fff;
+}
+
+/* accordion section */
+.card{margin-bottom: 20px;}
+.round_icon{
+  padding:5px;border-radius: 50%;font-size: 18px;
+}
+.card button{text-align:left;text-decoration: none;color: #000}
+.card button:hover{text-decoration: none;color: #000}
+.btn-link{
+    text-decoration:none;
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: none;
+}
+.option_right{float:right;font-size: 12px;}
+#accordion ul{
+  list-style: none;
+}
+#accordion ul li{border-top:1px solid #ccc} 
+#accordion ul li:first-child{border-top:none;} 
+#accordion ul li{font-size:16px;}
+#accordion ul li::before {
+  content: "\2022";
+  color: deepskyblue;
+  font-weight: bold;
+  display: inline-block; 
+  width: 1.5em;
+  padding-bottom: 15px;
+  margin-left: -1em;
+}
+button collapsed{background: white;}
+button collapsed:hover, button:focus {
+  -webkit-box-shadow: none!important;
+    box-shadow: none!important;
+    outline: 0;
+    text-decoration: none;
+    background: white;
+}
+
+
+
+
+
+

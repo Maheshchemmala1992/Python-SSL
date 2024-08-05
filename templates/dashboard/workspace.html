@@ -1,0 +1,892 @@
+{% load static %}
+<html>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
+    integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
+    crossorigin="anonymous"></script>
+
+<!-- data tables cdn-->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.dataTables.min.css">
+
+<link rel="stylesheet" href="{%static 'css/style.css'%}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<!-- jQuery library -->
+
+<!-- font awesome cdn -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
+<style>
+    .lesschar {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+    .dataTables_length{
+        margin-top: 7px;
+    }    
+    .dt-buttons{
+        margin-bottom: 10px;
+        margin-right: 7px;
+    }
+    .buttons-csv{
+        text-align: center!important;
+        color: white!important;
+        width: 90px;
+        height: 40px;
+        background: #5d9c53!important;
+        border: 1px solid #5d9c53!important;
+        box-shadow: 4px 4px 4px 0px rgb(13 69 61);
+    }
+    .buttons-pdf{
+        text-align: center!important;
+        color: white!important;
+        width: 90px;
+        height: 40px;
+        background: #17a2b8!important;
+        border: 1px solid #17a2b8!important;
+        box-shadow: 4px 4px 4px 0px rgb(13 69 61);
+    }
+    #loading {
+        position: fixed;
+        display: block;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        text-align: center;
+        background-color: rgb(255, 255, 255);
+        z-index: 99;
+    }
+
+    #loading-image {
+        position: absolute;
+        top: 6%;
+        left: 20%;
+        z-index: 100;
+    }    
+</style>
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <div id="loading">
+        <img id="loading-image" src="https://i.pinimg.com/originals/ac/14/0a/ac140a627af854f14c7f653efd7d53ae.gif" alt="Loading..." />
+    </div>	    
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <!-- back button -->
+
+            <div class="text-center d-md-inline">
+                <a href="/" class="button-33">
+                    <i class="fa fa-chevron-left"></i>&nbsp; back
+                </a>
+            </div>
+
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+                <div class="topbar-divider d-none d-sm-block"></div>
+                <!-- Add new button -->
+                <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle button-33" href="#" id="newbuttonDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="icon-circle bg-primary">
+                            <i class="fa fa-receipt text-white"></i>
+                        </div>&nbsp; Add New
+                    </a>
+                    <!-- Dropdown - User Information -->
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                        aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#createtask">
+                            <i class="fa fa-tasks fa-sm fa-fw mr-2 text-gray-400"></i>
+                            New Task
+                        </a>
+                        <a class="dropdown-item" style="display:none" href="#" data-toggle="modal"
+                            data-target="#createmeeting">
+                            <i class="fa fa-calendar fa-sm fa-fw mr-2 text-gray-400"></i>
+                            New Meeting
+                        </a>
+
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#createissue">
+                            <i class="fa fa-tasks fa-sm fa-fw mr-2 text-gray-400"></i>
+                            New Issue
+                        </a>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#selftaskmodal">
+                            <i class="fa fa-tasks fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Self Task
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- End of Topbar -->
+    </div>
+</div>
+
+<!-- Scroll to Top Button-->
+<!--<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>-->
+
+
+<!-- live working code -->
+
+<div class="container-fluid">
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="selftask-tab" data-toggle="tab" href="#selftask" role="tab" aria-controls="selftask"
+                aria-selected="true">Self-Task</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="task-tab" data-toggle="tab" href="#task" role="tab" aria-controls="task"
+                aria-selected="true">Task Assigned</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="issue-tab" data-toggle="tab" href="#issue" role="tab" aria-controls="issue"
+                aria-selected="false">Issue Assigned</a>
+        </li>
+    </ul>
+<form method="post" action="">
+            {% csrf_token %}
+    <div class="tab-content mt-3" id="myTabContent">
+        <div class="tab-pane fade show active" id="selftask" role="tabpanel" aria-labelledby="selftask-tab">
+            <div class="table table-responsive">
+                <div class="d-flex justify-content-between my-2">
+                    <section class="d-flex justify-content-between">
+                       <div>
+                        <label>Minimum Date:</label>
+                        <input class="form-control" type="date" name="date_from"/>
+						<input type="hidden" name="category" value="self_task">
+                       </div>
+                       <div class="px-2">-</div>
+                        <div>
+                        <label>Maximum Date:</label>
+                        <input class="form-control" type="date" name="date_to"/>
+                        </div>
+                    </section>
+                    
+                    <section class="align-self-bottom">
+						<input type="submit" class="btn btn-info text-white font-weight-bold mr-3" value="Search"/>
+                     
+                    </section>
+                </div>
+				</form>
+                <table id="selftask_table" style="font-size:14px" class="table w-100 table-striped table-bordered">
+                    <thead>
+                        <tr class="text-uppercase text-center">
+						<th>Date</th>
+                            <th>TICKET ID </th>
+							
+                            <th> Task </th>
+                            <th> Status </th>
+                            <th> Planned <small class="font-weight-bold">(Start/End Date)</small></th>
+                            <th>Priority</th>
+                            <th>User</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+						{%for j in obj1 %}
+                        {% for task in j %}
+						{% if task.created_on %}
+                        <tr class="text-capitalize text-center">
+						<td>{{task.created_on|date:'Y-m-d'}}</td>
+							<input type="hidden" name="{{ task.id }}" value="{{ task.id }}">
+							
+                            <td>
+                                <p class="text-white" style="background-color:rgba(67, 115, 223, .4);">{{task.task_id}}
+                                </p>
+                            </td>
+							
+							
+                            <td title="{{task.title}}">
+                                <p class="lesschar">{{task.title}}</p>
+                            </td>
+                            <td>
+                                <input type='button' style="height:30px;font-size:12px;cursor:default;"
+                                    value="{{task.get_task_status_display}}"
+                                    class="btn btn-sm w-100 font-weight-bold {% if task.task_status == '1' %} btn-danger {% elif task.task_status == '2' %} btn-warning text-dark {% else %} btn-info {% endif %}">
+                            </td>
+                            <td>{% if task.planned_start_date %} {{task.planned_start_date|date:'d-m-Y'}}
+                                {% else %} Start {% endif %} - {% if task.planned_end_date %}
+                                {{task.planned_end_date|date:'d-m-Y'}} {% else %} End {% endif %}
+                            </td>
+                            <td>
+                                <select name="priority" id="priority_{{task.id}}" class="form-control"
+                                    style="height:30px;width:90px;font-size:12px;cursor: pointer;"
+                                    onchange="priority_status_change({{task.id}})">
+                                    <option value="4" {% if task.priority == '4' %}selected{% endif %}>Critical</option>
+                                    <option value="1" {% if task.priority == '1' %}selected{% endif %}>High</option>
+                                    <option value="2" {% if task.priority == '2' %}selected{% endif %}>Medium</option>
+                                    <option value="3" {% if task.priority == '3' %}selected{% endif %}>Low</option>
+                                </select>
+                            </td>
+                            <td>{{task.assigned_by.name}}</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Action buttons">
+                                    <a type="button" title="View Ticket #{{task.task_id}}"
+                                        href="{% url 'self-task-edit' task.workspace.slug task.id %}"
+                                        class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></a>
+                                        <a type="button" data-toggle="modal" data-target="#sendmailModal{{task.id}}" href="{% url 'self-email' task.workspace.slug task.id %}" class="btn btn-danger btn-sm"><i class="fa fa-envelope"></i></a>
+                                        
+                                        <a type="button" title="Delete Ticket #{{task.task_id}}"
+                                        href="{% url 'self-task-delete' task.id %}"
+                                        class="btn btn-danger delete_task btn-sm"><i class="fa fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+						{% endif %}
+						{% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+		
+        <div class="tab-pane fade" id="task" role="tabpanel" aria-labelledby="task-tab">
+            <div class="table table-responsive">
+                <div class="d-flex justify-content-between my-2">
+				<form method="post" action="">
+            {% csrf_token %}
+                    <section class="d-flex justify-content-between">
+                       <div>
+                        <label>Minimum Date:</label>
+                        <input class="form-control" type="date" name="date_from1" />
+						<input type="hidden" name="category1" value="task">
+                       </div>
+                       <div class="px-2">-</div>
+                        <div>
+                        <label>Maximum Date:</label>
+                        <input class="form-control" type="date" name="date_to1"/>
+                        </div>
+                    </section>
+                    <div>
+                        <label>Filter By User:</label>
+                        <select name="assigned_to" id="" class="form-control">
+                                <option value="">Please select</option>
+                                {% for employee in employees %}
+                                <option value="{{employee.id}}">{{employee.name}}</option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                    <section class="align-self-bottom">
+					<input type="submit" class="btn btn-info text-white font-weight-bold mr-3" value="Search"/>
+                        
+                        
+                        
+                    </section>
+					
+                </div>
+				</form>
+                <table id="task_table" style="font-size:14px" class="table w-100 table-striped table-bordered">
+                    <thead>
+                        <tr class="text-uppercase text-center">
+						<th>Date</th>
+                            <th>TICKET ID </th>
+                            <th> Task </th>
+                            <th> Status </th>
+                            <th> Planned <small class="font-weight-bold">(Start/End Date)</small></th>
+                            <th>Priority</th>
+                            <th>User</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {%for j in tasks %}
+                        {% for task in j %}
+						{% if task.created_on %}
+                        <tr class="text-capitalize text-center">
+						<td>{{task.created_on|date:'Y-m-d'}}</td>
+                            <td>
+                                <p class="text-white" style="background-color:rgba(67, 115, 223, .4);">{{task.task_id}}
+                                </p>
+                            </td>
+                            <td title="{{task.title}}">
+                                <p class="lesschar">{{task.title}}</p>
+                            </td>
+                            <td>
+                                <input type='button' style="height:30px;font-size:12px;cursor:default;"
+                                    value="{{task.get_task_status_display}}"
+                                    class="btn btn-sm w-100 font-weight-bold {% if task.task_status == '1' %} btn-danger {% elif task.task_status == '2' %} btn-warning text-dark {% else %} btn-info {% endif %}">
+                            </td>
+                            <td>{% if task.planned_start_date %} {{task.planned_start_date|date:'d-m-Y'}}
+                                {% else %} Start {% endif %} - {% if task.planned_end_date %}
+                                {{task.planned_end_date|date:'d-m-Y'}} {% else %} End {% endif %}
+                            </td>
+                            <td>
+                                <select name="priority" id="priority_{{task.id}}" class="form-control"
+                                    style="height:30px;width:90px;font-size:12px;cursor: pointer;"
+                                    onchange="priority_status_change({{task.id}})">
+                                    <option value="4" {% if task.priority == '4' %}selected{% endif %}>Critical</option>
+                                    <option value="1" {% if task.priority == '1' %}selected{% endif %}>High</option>
+                                    <option value="2" {% if task.priority == '2' %}selected{% endif %}>Medium</option>
+                                    <option value="3" {% if task.priority == '3' %}selected{% endif %}>Low</option>
+                                </select>
+                            </td>
+                            <td>{{task.assigned_to.name}}</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Action buttons">
+                                    <a type="button" title="View Ticket #{{task.task_id}}"
+                                        href="{% url 'task-edit' task.workspace.slug task.id %}"
+                                        class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></a>
+                                        <a type="button" data-toggle="modal" data-target="#sendmailModal" href="#" class="btn btn-danger btn-sm"><i class="fa fa-envelope"></i></a>
+                                        
+                                        <a type="button" title="Delete Ticket #{{task.task_id}}"
+                                        href="{% url 'task-delete' task.id %}"
+                                        class="btn btn-danger delete_task btn-sm"><i class="fa fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+						{% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="issue" role="tabpanel" aria-labelledby="issue-tab">
+
+            <div class="table table-responsive">
+                <div class="d-flex justify-content-between my-2">
+                    <form method="post" action="">
+            {% csrf_token %}
+                    <section class="d-flex justify-content-between">
+                       <div>
+                        <label>Minimum Date:</label>
+                        <input class="form-control" type="date" name="date_from2" />
+						<input type="hidden" name="category2" value="issue">
+                       </div>
+                       <div class="px-2">-</div>
+                        <div>
+                        <label>Maximum Date:</label>
+                        <input class="form-control" type="date" name="date_to2"/>
+                        </div>
+                    </section>
+                    <div>
+                        <label>Filter By User:</label>
+                        <select name="assigned_to1" id="" class="form-control">
+                                <option value="">Please select</option>
+                                {% for employee in employees %}
+                                <option value="{{employee.id}}">{{employee.name}}</option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                    <section class="align-self-bottom">
+					<input type="submit" class="btn btn-info text-white font-weight-bold mr-3" value="Search"/>
+                        
+                        
+                        
+                    </section>
+					
+                </div>
+				</form>
+                <table id="issue_table" class="table w-100 table-striped table-bordered" style="font-size:14px">
+                    <thead>
+                        <tr class="text-uppercase text-center">
+						<th>Date</th>
+                            <th>TICKET ID</th>
+                            <th>Issue</th>
+                            <th>Status</th>
+                            <th>Planned Start/End</th>
+                            <th>Priority</th>
+                            <th>User</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+						{%for j in issues %}
+                        {% for issue in j %}
+						{% if issue.created_on %}
+                        
+                        <tr class="text-capitalize text-center">
+						<td>{{task.created_on|date:'Y-m-d'}}</td>
+                            <td>
+                                <p class="text-white" style="background-color:rgba(67, 115, 223, .4);">
+                                    {{issue.issue_id}}</p>
+                            </td>
+                            <td title="{{issue.title}}">
+                                <p class="lesschar">{{issue.title}}</p>
+                            </td>
+                            <td>
+                                <input type='button' style="height:30px;font-size:12px;cursor: default;"
+                                    value="{{issue.get_issue_status_display}}"
+                                    class="btn w-100 font-weight-bold {% if issue.issue_status == '1' %} btn-danger {% elif issue.issue_status == '2' %} btn-warning text-dark {% else %} btn-info {% endif %}">
+                            </td>
+                            <td>{% if issue.planned_start_date %} {{issue.planned_start_date|date:'d-m-Y'}}
+                                {% else %} Start {% endif %} - {% if issue.planned_end_date %}
+                                {{issue.planned_end_date|date:'d-m-Y'}} {% else %} End {% endif %}
+                            </td>
+                            <td>
+                                <select style="height:32px;width:90px;font-size:12px;cursor: pointer;" name="priority"
+                                    id="modify_{{issue.id}}" class="form-control"
+                                    onchange="priority_status_modify({{issue.id}})">
+                                    <option value="4" {% if issue.priority == '4' %}selected{% endif %}>Critical</option>
+                                    <option value="1" {% if issue.priority == '1' %}selected{% endif %}>High</option>
+                                    <option value="2" {% if issue.priority == '2' %}selected{% endif %}>Medium</option>
+                                    <option value="3" {% if issue.priority == '3' %}selected{% endif %}>Low</option>
+                                </select>
+                            </td>
+                            <td>{{issue.assigned_to.name}}</td>
+                            <td>
+                                <div class="btn-group btn-sm" role="group" aria-label="actionbutton">
+                                    <a type="button" data-toggle="tooltip" data-placement="top"
+                                        title="View Ticket #{{issue.issue_id}}"
+                                        href="{% url 'issue-edit' issue.workspace.slug issue.id %}"
+                                        class="btn btn-primary btn-sm detail_task"><i class="fa fa-eye"></i></a>
+                                        <a type="button" data-toggle="modal" data-target="#sendmailModal" href="#" class="btn btn-danger btn-sm"><i class="fa fa-envelope"></i></a>
+                                        <a type="button" data-toggle="tooltip" data-placement="top" title="download" href="#" class="btn btn-danger btn-sm"><i class="fa fa-download"></i></a>
+                                    {% if request.session.is_admin == True %}
+                                    <a type="button" data-toggle="tooltip" data-placement="top" title="Delete Ticket #{{issue.issue_id}}"
+                                        href="{% url 'issue-delete' issue.id %}"
+                                        class="btn btn-danger btn-sm delete_task"><i class="fa fa-trash"></i></a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+						{% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+{%for j in obj1 %}
+{% for task1 in j %}
+{% if task1.created_on %}
+
+<!-- Modal send mail -->
+<div class="modal fade" id="sendmailModal{{task1.id}}" tabindex="-1" role="dialog" aria-labelledby="sendmailmodal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+	  <form action="{% url 'self-email' task1.workspace.slug task1.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Send this to email</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <p class="text-muted">Type email to send this task detail.</p>
+          <input type="text" name="email" value="" class="form-control" placeholder="example@mail.com" />
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Send</button>
+		  
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+		</form>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endfor %}
+{% endfor %}
+<script src="//cdn.datatables.net/plug-ins/1.10.11/sorting/date-eu.js" type="text/javascript"></script>
+<script>
+    $('.delete_task').on('click', function (e) {
+        action = confirm('Are you sure to remove, this action cannot be undone...!')
+        if (action == false) {
+            e.preventDefault();
+        } else {
+            location.reload();
+        }
+    })
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#issue_table').DataTable({
+            dom: 'Blfrtip',
+            buttons: [
+               'csv', 'pdf'
+            ]
+        });
+
+        $('#selftask_table').DataTable({
+            dom: 'Blfrtip',
+			"order": [[ 3, "desc" ]],
+            buttons: [
+               'csv', 'pdf'
+            ]
+			 
+        });
+		$('#task_table').DataTable({
+            dom: 'Blfrtip',
+            buttons: [
+               'csv', 'pdf'
+            ]
+			 
+        });
+    });
+</script>
+
+<!--<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.js"></script>-->
+<script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script rel="text/javascript"
+    src="https://cdn.datatables.net/tabletools/2.2.4/js/dataTables.tabletools.min.js"></script>
+
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+<!-- <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script> -->
+
+
+
+<!-------------------------------------The Modal to create New Task---------------------------------- -->
+<div class="modal" id="createtask">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Create Task</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="{% url 'task-add' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <small>Title*</small>
+                            <input type="text" placeholder="Title" name="title" class="form-control" required><br>
+                        </div>
+                        <div class="col-lg-12">
+                            <small>Assign To*</small>
+                            <select name="assigned_to" id="" class="form-control">
+                                <option value="">Please select</option>
+                                {% for employee in employees %}
+                                <option value="{{employee.id}}">{{employee.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Priority</small>
+                            <select name="priority" id="" class="form-control">
+                                <!-- <option value="">Please select</option> -->
+                                <option value="3">Low</option>
+                                <option value="2" selected>Medium</option>
+                                <option value="1">High</option>
+                                <option value="4">Critical</option>
+                            </select>
+                            <br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Workspace</small>
+                            <select name="workspace" id="" class="form-control">
+                                <!-- <option value="">Please select</option> -->
+                                {% for space in workspace %}
+                                <option value="{{space.id}}" selected>{{space.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <br>
+                        </div>
+                        <div class="col-md-4">
+                            <small>Status</small>
+                            <select name="task_status" id="" class="form-control">
+                                <option value="1" selected>Not Started</option>
+                                <option value="2">In Progress</option>
+                                <option value="3">In Review</option>
+                                <option value="4">Completed</option>
+                                <option value="5">Cancelled</option>
+                            </select><br>
+                        </div>
+
+                        <div class="col-md-4">
+                            <small>Start Date*</small>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+                                            aria-hidden="true"></i></span>
+                                </div>
+                                <input type="datetime-local" name="planned_start_date" class="form-control"
+                                    aria-label="date" aria-describedby="calender_icon" required>
+                            </div>
+                            <br>
+                        </div>
+                        <div class="col-md-4">
+                            <small>End Date*</small>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+                                            aria-hidden="true"></i></span>
+                                </div>
+                                <input type="datetime-local" name="planned_end_date" class="form-control"
+                                    aria-label="date" aria-describedby="calender_icon">
+                            </div>
+                            <br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Description</small>
+                            <textarea name="description" placeholder="Type Something" cols="30" class="form-control"
+                                rows="2"></textarea><br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Upload File</small>
+                            <input type="file" name="file" class="form-control">
+                        </div>   
+                    </div>
+                    <input type="submit" class="btn btn-primary w-100" value="Add/Assign">
+                </form>
+            </div>
+            <!-- modal footer -->
+        </div>
+    </div>
+</div>
+
+<!-------------------------------------The Modal to create Issue---------------------------------- -->
+<div class="modal" id="createissue">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Create Issue</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="{% url 'issue-add' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <small>Issue Title*</small>
+                            <input type="text" name="title" placeholder="Add Issue Title" class="form-control"
+                                required><br>
+                        </div>
+                        <div class="col-lg-12">
+                            <small>Assigned To*</small>
+                            <select name="assigned_to" id="" class="form-control">
+                                <option value="">Please select</option>
+                                {% for employee in employees %}
+                                <option value="{{employee.id}}">{{employee.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Issue Type</small>
+                            <select name="issue_type" id="" class="form-control">
+                                <option value="Bug">Bug</option>
+                                <option value="Feature" selected>Feature</option>
+                                <option value="Improvement">Improvement</option>
+                            </select><br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Priority</small>
+                            <select name="priority" id="" class="form-control">
+                                <option value="1">Critical</option>
+                                <option value="2">High</option>
+                                <option value="3" selected>Medium</option>
+                                <option value="4">Low</option>
+                            </select><br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Workspace</small>
+                            <select name="workspace" id="" class="form-control">
+                                <!-- <option value="">Please select</option> -->
+                                {% for space in workspace %}
+                                <option value="{{space.id}}" selected>{{space.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Status</small>
+                            <select name="issue_status" id="" class="form-control">
+                                <option value="1" selected>Not Started</option>
+                                <option value="2">In Progress</option>
+                                <option value="3">In Review</option>
+                                <option value="4">Completed</option>
+                                <option value="5">Cancelled</option>
+                            </select><br>
+                        </div>
+                        <div class="col-md-4">
+                            <small>Start Date*</small>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+                                            aria-hidden="true"></i></span>
+                                </div>
+                                <input type="datetime-local" name="planned_start_date" class="form-control"
+                                    aria-label="date" aria-describedby="calender_icon" required>
+                            </div>
+                            <br>
+                        </div>
+                        <div class="col-md-4">
+                            <small>End Date*</small>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+                                            aria-hidden="true"></i></span>
+                                </div>
+                                <input type="datetime-local" name="planned_end_date" class="form-control"
+                                    aria-label="date" aria-describedby="calender_icon">
+                            </div>
+                            <br>
+                        </div>
+                        <!-- <script>
+								$(function () {
+									$('input[name="issuedatetime"]').daterangepicker({
+										timePicker: true,
+										startDate: moment().startOf('hour'),
+										endDate: moment().startOf('hour').add(32, 'hour'),
+										locale: {
+											format: 'M/DD hh:mm A'
+										}
+									});
+								});
+							</script> -->
+                        <div class="col-md-6">
+                            <small>Description</small>
+                            <textarea name="description" placeholder="Type Something" cols="30" class="form-control"
+                                rows="2"></textarea>
+                            <br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Upload File</small>
+                            <input type="file" name="file" class="form-control">
+                        </div>                        
+                    </div>
+                    <input type="submit" class="btn btn-primary w-100" value="Create Issue">
+                </form>
+            </div>
+            <!-- modal footer -->
+        </div>
+    </div>
+</div>
+
+<!-------------------------------------The Modal to create Self Task---------------------------------- -->
+<div class="modal" id="selftaskmodal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Create Self Task</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form action="{%url 'self-task'%}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <small>Task Title*</small>
+                            <input type="text" placeholder="Title" name="title" class="form-control" required><br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Priority</small>
+                            <select name="priority" id="" class="form-control">
+                                <!-- <option value="">Please select</option> -->
+                                <option value="3">Low</option>
+                                <option value="2" selected>Medium</option>
+                                <option value="1">High</option>
+                                <option value="4">Critical</option>
+                            </select>
+                            <br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Workspace</small>
+                            <select name="workspace" id="" class="form-control">
+                                <!-- <option value="">Please select</option> -->
+                                {% for space in workspace %}
+                                <option value="{{space.id}}" selected>{{space.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <br>
+                        </div>
+                        <div class="col-lg-12">
+                            <small>Project Name/Site(Url)*</small>
+                            <input type="text" placeholder="Project Name/Site(Url)" name="ProjectName" class="form-control" required><br>
+                        </div>
+                       
+                        <div class="col-md-12">
+                            <small>Description</small>
+                            <textarea name="description" placeholder="Type Something" cols="30" class="form-control"
+                                rows="2"></textarea><br>
+                        </div>
+						<div class="col-md-4">
+                            <small>Start Date*</small>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+                                            aria-hidden="true"></i></span>
+                                </div>
+                                <input type="datetime-local" name="planned_start_date" class="form-control"
+                                    aria-label="date" aria-describedby="calender_icon" required>
+                            </div>
+                            <br>
+                        </div>
+                        <div class="col-md-4">
+                            <small>End Date*</small>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+                                            aria-hidden="true"></i></span>
+                                </div>
+                                <input type="datetime-local" name="planned_end_date" class="form-control"
+                                    aria-label="date" aria-describedby="calender_icon">
+                            </div>
+                            <br>
+                        </div>
+                        <div class="col-md-4">
+                            <small>Status</small>
+                            <select name="task_status" id="" class="form-control">
+                                <option value="1" selected>Not Started</option>
+                                <option value="2">In Progress</option>
+                                <option value="3">In Review</option>
+                                <option value="4">Completed</option>
+                                <option value="5">Cancelled</option>
+                            </select><br>
+                        </div>
+                        <div class="col-md-6">
+                            <small>Upload File</small>
+                            <input type="file" name="file" class="form-control">
+                        </div>   
+                    </div>
+                    <input type="submit" class="btn btn-primary w-100" value="Save Task">
+                </form>
+            </div>
+            <!-- modal footer -->
+        </div>
+    </div>
+</div>
+<script>
+    $(window).on('load', function () {
+      $('#loading').delay(1000).fadeOut();
+    })
+</script>
+</html>

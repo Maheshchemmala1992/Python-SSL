@@ -1,0 +1,56 @@
+sudo systemctl restart sport.gunicorn.service
+sudo systemctl restart ibportahme.gunicorn.service
+sudo systemctl restart ibidmin.gunicorn.service
+
+sudo systemctl restart crm-staging.service
+sudo systemctl restart ib-portal-staging.service
+sudo systemctl restart ib-admin-staging.service
+
+sudo systemctl restart client_dashboard_gunicorn.service
+sudo systemctl restart ib_portal_gunicorn.service
+sudo systemctl restart ib_admin_gunicorn.service
+
+sudo systemctl restart divmart_guni.service 
+sudo systemctl restart forex_crm_guni.service 
+
+sudo systemctl restart gunicorn-divepay.service
+sudo systemctl restart dive_pay_demo.service
+
+sudo systemctl restart 6iJournal_guni.service
+sudo systemctl restart ditsintelligence_gunicorn.service
+
+sudo systemctl restart divsolution_website_gunicorn.service
+sudo systemctl restart tradeblog.gunicorn.service
+
+sudo systemctl restart welcome.6itrade.com.gunicorn.service
+sudo systemctl restart fxfinancial.gunicorn.service
+sudo systemctl restart dits_hrm_guni.service
+
+sudo systemctl status gunicorn.socket
+sudo journalctl -u gunicorn.socket Website_divsolution_gunicorn.service
+sudo systemctl restart thespa.service
+
+sudo tail -f -n100  /var/log/syslog
+
+python -m venv divenv(python env create in windows)
+
+sudo certbot --nginx ( ssl certificate renew)
+certbot --force-renewal -d hnxinluan.cn(for hnxinluan ssl)
+
+
+Github email id  - ditsgithub@gmail.com , pwd- Dits@98765
+
+translation-cmd = django-admin compilemessages
+
+https://www.lfd.uci.edu/~gohlke/pythonlibs/ (For mysql client use this link)
+
+
+username - 7025 , pwd - Fxfin%147 (https://clients.6itrade.com/)
+
+Filter permission -
+
+{% if perms.enroll.delete_blog%}
+	<input type="button" value = "add">
+{% else %}
+	<h3>No Delete Permission</h3>
+{% endif %}

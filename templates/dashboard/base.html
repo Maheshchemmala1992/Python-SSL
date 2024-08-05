@@ -1,0 +1,944 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>DITS Management</title>
+
+	<!--favicon-->
+	<link rel="apple-touch-icon" sizes="57x57" href="/static/img/favicon/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="/static/img/favicon/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="/static/img/favicon/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="/static/img/favicon/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="/static/img/favicon/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="/static/img/favicon/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="/static/img/favicon/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/static/img/favicon/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/static/img/favicon/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192" href="/static/img/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/static/img/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon/favicon-16x16.png">
+	<link rel="manifest" href="/static/img/favicon/manifest.json">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="msapplication-TileImage" content="/static/img/favicon/ms-icon-144x144.png">
+	<meta name="theme-color" content="#000">
+
+	<!-- Custom fonts for this project-->
+	<link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+	<link
+		href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+		rel="stylesheet">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+	<!-- jQuery library -->
+	<!-- font awesome cdn -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<!--  jquery data tables -->
+	<!-- Custom styles for this project-->
+	<link href="{% static 'css/dits_management_style.min.css' %}" rel="stylesheet">
+
+	<link rel="stylesheet" href="{%static 'css/style.css'%}">
+	<link rel="stylesheet" href="{% static 'css/base.css' %}">
+	<style>
+		#loading {
+			position: absolute;
+			margin: 0 auto;
+			display: block;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			text-align: center;
+			background-color: rgb(255, 255, 255);
+			z-index: 99;
+		}
+
+		#loading-image {
+			position: relative;
+			z-index: 100;
+		}
+
+		@media only screen and (max-width: 600px) {
+			#loading-image {
+				width: 500px;
+				margin: 40% auto;
+			}
+		}
+		/*#accordionSidebar{
+			width: 17rem!important;
+		}	*/
+		.dropdown-menu a:hover {
+			background-color: transparent
+		}	
+		.mx-1 ::-webkit-scrollbar {
+			width: 0px;
+		}			
+	</style>
+	
+<!-- remove sidebar on screen size < 514 screen size, and add sidebar on screen size when notification open -->
+	<script>
+		$(window).on("load",function () {	
+			/*If browser resized, check width again */
+			if (window.location.href.indexOf("notification") > 0 && $(window).width() < 514) 
+			  {
+				$('#accordionSidebar').removeClass('toggled');
+			}
+			else if ($(window).width() < 514) {
+				$('#accordionSidebar').addClass('toggled');
+			}
+			else {
+				$('#accordionSidebar').removeClass('toggled');}
+		});
+	</script>
+</head>
+
+<body id="page-top">
+	<div id="loading">
+		<img class="img-responsive" id="loading-image"
+			src="https://i.pinimg.com/originals/ac/14/0a/ac140a627af854f14c7f653efd7d53ae.gif" alt="Loading..." />
+	</div>
+	<!-- Page Wrapper -->
+	<div id="wrapper">
+		<!-- Sidebar -->
+		<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+			<!-- Sidebar - Brand -->
+			<a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+				<div class="sidebar-brand-icon rotate-n-15">
+					<i class="fas fa-laugh-wink text-warning"></i>
+				</div>
+				<div class="sidebar-brand-text mx-3"> DITS Management</div>
+			</a>
+			<!-- Divider -->
+			<hr class="sidebar-divider my-0 mb-3">
+			<!-- with out notifications -->
+			<div id="hideOnNotifications">
+				<!-- Divider -->
+				{% if request.session.is_admin == True %}
+	
+				<div class="sidebar-heading">
+					Workspace
+				</div>
+				<!-- Nav Item - workspace -->
+				<li class="nav-item active">
+					<a class="nav-link" href="#" data-toggle="modal" data-target="#createworkspace">
+						<i class="fas fa-fw fa-warehouse"></i>
+						<span>+ Workspace</span></a>
+				</li>
+				<div class="sidebar-heading pb-3">
+					All Workspaces
+				</div>
+				{% for work in workspaces %}
+				<li class="nav-item text-capitalize pb-0">
+					<span class="nav-link pb-1 pt-1">
+						<i class="fas fa-warehouse fa-fw"></i>
+						<!-- <img class="img-profile rounded-circle"
+									src="/static/img/undraw_profile.svg"> -->
+						<span>
+							<a href="/workspace/{{work.id}}/update"
+								class="{% if work.status == True %}text-white{% else %}text-secondary{% endif %}">
+								{{work.name}}
+							</a>
+						</span>
+					</span>
+				</li>
+				{% endfor %}
+				{% endif %}
+	
+				<div class="sidebar-heading sidebar-heading pb-3 mt-3">
+					All Members
+				</div>
+	
+				{% for member in members %}
+				<li class="nav-item text-capitalize pb-0">
+					<span class="nav-link pb-1 pt-1">
+						<img class="img-profile rounded-circle" src="/static/img/undraw_profile.svg">
+						<span>{{member.name}}</span>
+					</span>
+				</li>
+				{% endfor %}
+			</div>
+
+			<!-- with notifications -->
+			<div id="hideOnOthers" class="mt-5" style="font-size: 13px;">
+				{% for notification in not_obj %}
+				<a class="text-white" href="{% url 'notification_detailed_view' notification.id %}">
+					<div class="bg-primary p-1 pt-2 pb-2 mb-1">
+					<div>
+						<span class="font-weight-bold">{{notification.title|truncatechars:27}}</span>
+						
+						</div>
+						<span class="small pull-right">{{notification.created_at|date:'M d, Y'}}</span>
+						<br>
+						<!-- <span>{{notification.content|truncatechars:35}}</span> -->
+					</div>
+				</a>
+				{% endfor %}
+                {% if not_obj.has_other_pages %}
+                    <div class="col-12 text-right pull-right">
+                        <ul class="pagination justify-content-end">
+                            {% if not_obj.has_previous %}
+                                <li><a href="?page={{ not_obj.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in not_obj.paginator.page_range %}
+                                {% if not_obj.number == i %}
+                                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                    <li class="to_select"><a href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not_obj.has_next %}
+                                <li><a href="?page={{ not_obj.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}				
+			</div>
+
+			<hr class="sidebar-divider mt-3">
+			<!-- Sidebar Toggler (Sidebar) -->
+			<div class="text-center d-none d-md-inline">
+				<button class="rounded-circle border-0" id="sidebarToggle"></button>
+			</div>
+		</ul>
+		<!-- End of Sidebar -->
+		<!-- Content Wrapper -->
+		<div id="content-wrapper" class="d-flex flex-column">
+			<!-- Main Content -->
+			<div id="content">
+				<!-- Topbar -->
+				<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+					<!-- Sidebar Toggle (Topbar) -->
+					<button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+						<i class="fa fa-bars"></i>
+					</button>
+					<!-- Topbar Search -->
+
+					<!-- Topbar Navbar -->
+					<ul class="navbar-nav ml-auto">
+						<!-- Nav Item - Search Dropdown (Visible Only XS) -->
+						<li class="nav-item dropdown no-arrow" style="display:none">
+							<a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fas fa-search fa-fw"></i>
+							</a>
+							<!-- Dropdown - Messages -->
+							<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+								aria-labelledby="searchDropdown">
+								<form class="form-inline mr-auto w-100 navbar-search">
+									<div class="input-group">
+										<input type="text" class="form-control bg-light border-0 small"
+											placeholder="Search for..." aria-label="Search"
+											aria-describedby="basic-addon2">
+										<div class="input-group-append">
+											<button class="btn btn-primary" type="button">
+												<i class="fas fa-search fa-sm"></i>
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</li>
+
+						<!-- Nav Item - Alerts -->
+						<li class="nav-item dropdown no-arrow mx-1" style="display:block">
+							<a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fas fa-bell fa-fw"></i>
+								<!-- Counter - Alerts -->
+								<span class="badge badge-danger badge-counter">
+									{% if notifi_count > 10 %}10+{% else %}{{notifi_count}}{% endif %}
+								</span>
+							</a>
+							<!-- Dropdown - Alerts -->
+							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+								aria-labelledby="alertsDropdown">
+								<h6 class="dropdown-header">
+									Alerts Center
+								</h6>
+								<div style="height:200px;overflow:auto;">
+									{% if notifications %}
+									{% for notification in notifications %}
+									<a class="dropdown-item d-flex align-items-center"
+										href="{% url 'notification_detailed_view' notification.id %}">
+										<div class="mr-3">
+											<div class="icon-circle bg-primary">
+												<i class="fas fa-file-alt text-white"></i>
+											</div>
+										</div>
+										<div>
+											<div class="small text-gray-500">{{notification.created_at|date:'M d, Y'}}
+											</div>
+											<span class="font-weight-bold">{{notification.title}}</span>
+										</div>
+									</a>
+									{% endfor %}
+									{% else %}
+										<p class="text-center" style="margin-top: 30%;">No new notifications</p>
+									{% endif %}
+								</div>
+								<a class="dropdown-item text-center small text-danger"
+									href="{% if not_obj %}{% url 'user_notofications_view' %}{% else %}#{% endif %}">Show
+									All Alerts</a>
+							</div>
+						</li>
+						<!-- Nav Item - Messages -->
+						<!-- <li style="display:none;" class="nav-item dropdown no-arrow mx-1">
+							<a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fas fa-envelope fa-fw"></i>
+
+								<span class="badge badge-danger badge-counter">7</span>
+							</a>
+
+							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+								aria-labelledby="messagesDropdown">
+								<h6 class="dropdown-header">
+									Message Center
+								</h6>
+								<a class="dropdown-item d-flex align-items-center" href="#">
+									<div class="dropdown-list-image mr-3">
+										<img class="rounded-circle" src="/static/img/undraw_profile_1.svg" alt="...">
+										<div class="status-indicator bg-success"></div>
+									</div>
+									<div class="font-weight-bold">
+										<div class="text-truncate">Hi there! I am wondering if you can help me with a
+											problem I've been having.</div>
+										<div class="small text-gray-500">Emily Fowler · 58m</div>
+									</div>
+								</a>
+								<a class="dropdown-item d-flex align-items-center" href="#">
+									<div class="dropdown-list-image mr-3">
+										<img class="rounded-circle" src="/static/img/undraw_profile_2.svg" alt="...">
+										<div class="status-indicator"></div>
+									</div>
+									<div>
+										<div class="text-truncate">I have the photos that you ordered last month, how
+											would you like them sent to you?</div>
+										<div class="small text-gray-500">Jae Chun · 1d</div>
+									</div>
+								</a>
+								<a class="dropdown-item d-flex align-items-center" href="#">
+									<div class="dropdown-list-image mr-3">
+										<img class="rounded-circle" src="/static/img/undraw_profile_3.svg" alt="...">
+										<div class="status-indicator bg-warning"></div>
+									</div>
+									<div>
+										<div class="text-truncate">Last month's report looks great, I am very happy with
+											the progress so far, keep up the good work!</div>
+										<div class="small text-gray-500">Morgan Alvarez · 2d</div>
+									</div>
+								</a>
+								<a class="dropdown-item d-flex align-items-center" href="#">
+									<div class="dropdown-list-image mr-3">
+										<img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+											alt="...">
+										<div class="status-indicator bg-success"></div>
+									</div>
+									<div>
+										<div class="text-truncate">Am I a good boy? The reason I ask is because someone
+											told me that people say this to all dogs, even if they aren't good...</div>
+										<div class="small text-gray-500">Chicken the Dog · 2w</div>
+									</div>
+								</a>
+								<a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
+							</div>
+						</li> -->
+						<!-- Nav Item - User Information -->
+
+						<li class="nav-item dropdown no-arrow">
+							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<span class="text-capitalize text-dark font-weight-bold p-1">{{obj.name}}
+									<img class="img-profile rounded-circle" src="/static/img/undraw_profile.svg">
+								</span>
+							</a>
+							<!-- Dropdown - User Information -->
+							<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+								aria-labelledby="userDropdown">
+								<!-- <a class="dropdown-item" href="#">
+									<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+									Profile Settings
+								</a>
+								<a class="dropdown-item" href="#">
+									<i class="fas fa-envelope fa-sm fa-fw mr-2 text-gray-400"></i>
+									Invitations
+								</a>
+								<div class="dropdown-divider"></div> -->
+								<a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+									<i class="fas fa-power-off fa-sm fa-fw mr-2 text-gray-400"></i>
+									Logout
+								</a>
+							</div>
+						</li>
+					</ul>
+				</nav>
+				<!-- End of Topbar -->
+				{% block content %}
+				{% endblock %}
+			</div>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<footer class="bg-white" style="display:none">
+		<div class="container-fluid">
+			<div class="copyright text-center">
+				<span>Copyright &copy; DITS Management 2021</span>
+			</div>
+		</div>
+	</footer>
+	<!-- End of Footer -->
+
+	<!-- Scroll to Top Button-->
+	<a class="scroll-to-top rounded" href="#page-top">
+		<i class="fas fa-angle-up"></i>
+	</a>
+
+	<!-- Logout Modal-->
+	<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+					<button class="close" type="button" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-body">Are you sure to end your current session? Please click on Logout button.</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">Cancel</button>
+					<a class="btn btn-primary btn-sm" href="{% url 'logout' %}">Logout</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-------------------------------------The Modal to create workspace---------------------------------- -->
+	<div class="modal" id="createworkspace">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Create Workspace</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form action="{% url 'work-space-add' %}" method="POST">
+						{% csrf_token %}
+						<small>Workspace Name*</small>
+						<input type="text" placeholder="Enter your workspace name" name="name" class="form-control"
+							required>
+						<!-- <input type="text" name="team" id="" class="form-control" required> -->
+						<small class="mt-2">Team*</small>
+						<select name="team" class="form-control" required='required'>
+							<option value="">Please select</option>
+							{% for team in teams %}
+							<option value="{{team.id}}">{{team}}</option>
+							{% endfor %}
+						</select>
+						<small class="mt-2">Member*</small>
+						<select name="staff" id="" class="form-control" multiple>
+							{% for staff in all_staff %}
+							<option value="{{staff.id}}" class="text-capitalize">{{staff.name}}</option>
+							{% endfor %}
+						</select>
+						<br>
+						<input type="submit" class="btn btn-default bg-gradient-success text-white text-right"
+							value="Create Workspace">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-------------------------------------The Modal to create Team --------------------------------------->
+	<div class="modal" id="createteam">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Create Team</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form action="{% url 'team-add' %}" method="POST">
+						{% csrf_token %}
+						<small>Team Name*</small>
+						<input type="text" placeholder="Team Name" name="name" class="form-control" required>
+						<br>
+						<small>Team Description</small>
+						<input type="text" placeholder="Description" name="description" class="form-control">
+						<br>
+						<input type="submit" class="btn btn-default bg-gradient-success text-white pull-right"
+							value="Create New Team">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-------------------------------------The Modal to create New Task---------------------------------- -->
+	<div class="modal" id="createtask">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Create Task</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form action="{% url 'task-add' %}" method="POST">
+						{% csrf_token %}
+						<div class="row">
+							<div class="col-lg-12">
+								<small>Title*</small>
+								<input type="text" placeholder="Title" name="title" class="form-control" required><br>
+							</div>
+							<div class="col-lg-12">
+								<small>Assign To*</small>
+								<select name="assigned_to" id="" class="form-control">
+									<option value="">Please select</option>
+									{% for employee in employees %}
+									<option value="{{employee.id}}">{{employee.name}}</option>
+									{% endfor %}
+								</select>
+								<br>
+							</div>
+							<div class="col-md-6">
+								<small>Priority</small>
+								<select name="priority" id="" class="form-control">
+									<!-- <option value="">Please select</option> -->
+									<option value="3">Low</option>
+									<option value="2" selected>Medium</option>
+									<option value="1">High</option>
+									<option value="4">Critical</option>
+								</select>
+								<br>
+							</div>
+							<div class="col-md-6">
+								<small>Workspace</small>
+								<select name="workspace" id="" class="form-control">
+									<!-- <option value="">Please select</option> -->
+									{% for space in workspace %}
+									<option value="{{space.id}}" selected>{{space.name}}</option>
+									{% endfor %}
+								</select>
+								<br>
+							</div>
+							<div class="col-md-4">
+								<small>Status</small>
+								<select name="task_status" id="" class="form-control">
+									<option value="1" selected>Not Started</option>
+									<option value="2">In Progress</option>
+									<option value="3">In Review</option>
+									<option value="4">Completed</option>
+									<option value="5">Cancelled</option>
+								</select><br>
+							</div>
+
+							<div class="col-md-4">
+								<small>Start Date*</small>
+								<div class="input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+												aria-hidden="true"></i></span>
+									</div>
+									<input type="datetime-local" name="planned_start_date" class="form-control"
+										aria-label="date" aria-describedby="calender_icon" required>
+								</div>
+								<br>
+							</div>
+							<div class="col-md-4">
+								<small>End Date*</small>
+								<div class="input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+												aria-hidden="true"></i></span>
+									</div>
+									<input type="datetime-local" name="planned_end_date" class="form-control"
+										aria-label="date" aria-describedby="calender_icon" required>
+								</div>
+								<br>
+							</div>
+							<div class="col-md-12">
+								<small>Description</small>
+								<textarea name="description" placeholder="Type Something" cols="30" class="form-control"
+									rows="2"></textarea><br>
+							</div>
+						</div>
+						<input type="submit" class="btn btn-primary w-100" value="Add/Assign">
+					</form>
+				</div>
+				<!-- modal footer -->
+			</div>
+		</div>
+	</div>
+
+	<!-------------------------------------The Modal to create New Meeting---------------------------------- -->
+	<div class="modal" id="createmeeting">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Create Meeting</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="row">
+
+						<div class="col-lg-12">
+							<small>Meeting Title <i class="fa fa-info-circle" data-toggle="tooltip"
+									title="Give your Meeting a name. It's mandatory field."></i></small>
+							<input type="text" placeholder="Add Meeting Title" class="form-control"><br>
+						</div>
+
+
+						<div class="col-lg-6">
+							<small>Date <i class="fa fa-info-circle" data-toggle="tooltip"
+									title="Set your meeting date."></i></small>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+											aria-hidden="true"></i></span>
+								</div>
+								<input type="text" name="meetingdatetimes" class="form-control" aria-label="date"
+									aria-describedby="calender_icon">
+							</div>
+						</div>
+						<!-- <script>
+							$(function () {
+								$('input[name="meetingdatetimes"]').daterangepicker({
+									timePicker: true,
+									startDate: moment().startOf('hour'),
+									endDate: moment().startOf('hour').add(32, 'hour'),
+									locale: {
+										format: 'M/DD hh:mm A'
+									}
+								});
+							});
+						</script> -->
+						<div class="col-lg-6">
+							<small>Start Time</small>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span class="input-group-text" id="am_pm">
+										<select name="" id="" style="background-color: transparent;border: none;">
+											<option value="AM">AM</option>
+											<option value="PM">PM</option>
+										</select>
+									</span>
+								</div>
+								<input type="time" class="form-control" aria-describedby="am_pm" id="appt" name="appt">
+							</div>
+						</div>
+						<div class="col-md-6">
+							<small>Task (Optional)</small>
+							<select name="" id="" class="form-control">
+								<option value="">0000001-demo</option>
+								<option value="">02022-test</option>
+							</select><br>
+						</div>
+
+						<div class="col-md-6">
+							<small>Duration (Hrs/Mins)</small>
+							<input type="time" class="form-control" aria-describedby="am_pm" id="appt" name="appt">
+						</div>
+						<div class="col-md-12">
+							<small>Location</small>
+							<select name="" id="" class="form-control">
+								<option value="">Add Location</option>
+
+							</select><br>
+						</div>
+
+						<div class="col-md-12">
+							<small>Participant (Optional)</small>
+							<select name="" id="" class="form-control">
+								<option value="Sandeep Yadav">Sandeep Yadav</option>
+								<option value="Neeta">Neeta</option>
+							</select><br>
+						</div>
+						<div class="col-md-12">
+							<small>Agenda (Optional) <i class="fa fa-info-circle" data-toggle="tooltip"
+									title="Set key agenda points for your meetings to share with your team members."></i></small>
+							<textarea name="" id="" placeholder="Type and press enter to add agenda" cols="30"
+								class="form-control" rows="2"></textarea><br>
+						</div>
+					</div>
+				</div>
+				<!-- modal footer -->
+				<div class="modal-footer">
+					<button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+					<a class="btn btn-primary" href="#">Create Meeting</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-------------------------------------The Modal to create Issue---------------------------------- -->
+	<div class="modal" id="createissue">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Create Issue</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form action="{% url 'issue-add' %}" method="POST">
+						{% csrf_token %}
+						<div class="row">
+							<div class="col-lg-12">
+								<small>Issue Title*</small>
+								<input type="text" name="title" placeholder="Add Issue Title" class="form-control"
+									required><br>
+							</div>
+							<div class="col-lg-12">
+								<small>Assigned To*</small>
+								<select name="assigned_to" id="" class="form-control">
+									<option value="">Please select</option>
+									{% for employee in employees %}
+									<option value="{{employee.id}}">{{employee.name}}</option>
+									{% endfor %}
+								</select>
+								<br>
+							</div>
+							<div class="col-md-6">
+								<small>Issue Type</small>
+								<select name="issue_type" id="" class="form-control">
+									<option value="Bug">Bug</option>
+									<option value="Feature" selected>Feature</option>
+									<option value="Improvement">Improvement</option>
+								</select><br>
+							</div>
+							<div class="col-md-6">
+								<small>Priority</small>
+								<select name="priority" id="" class="form-control">
+									<option value="1">Critical</option>
+									<option value="2">High</option>
+									<option value="3" selected>Medium</option>
+									<option value="4">Low</option>
+								</select><br>
+							</div>
+							<div class="col-md-6">
+								<small>Workspace</small>
+								<select name="workspace" id="" class="form-control">
+									<!-- <option value="">Please select</option> -->
+									{% for space in workspace %}
+									<option value="{{space.id}}" selected>{{space.name}}</option>
+									{% endfor %}
+								</select>
+								<br>
+							</div>
+							<div class="col-md-6">
+								<small>Status</small>
+								<select name="issue_status" id="" class="form-control">
+									<option value="1" selected>Not Started</option>
+									<option value="2">In Progress</option>
+									<option value="3">In Review</option>
+									<option value="4">Completed</option>
+									<option value="5">Cancelled</option>
+								</select><br>
+							</div>
+							<div class="col-md-4">
+								<small>Start Date*</small>
+								<div class="input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+												aria-hidden="true"></i></span>
+									</div>
+									<input type="datetime-local" name="planned_start_date" class="form-control"
+										aria-label="date" aria-describedby="calender_icon" required>
+								</div>
+								<br>
+							</div>
+							<div class="col-md-4">
+								<small>End Date*</small>
+								<div class="input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="calender_icon"><i class="fa fa-calendar"
+												aria-hidden="true"></i></span>
+									</div>
+									<input type="datetime-local" name="planned_end_date" class="form-control"
+										aria-label="date" aria-describedby="calender_icon" required>
+								</div>
+								<br>
+							</div>
+							<!-- <script>
+								$(function () {
+									$('input[name="issuedatetime"]').daterangepicker({
+										timePicker: true,
+										startDate: moment().startOf('hour'),
+										endDate: moment().startOf('hour').add(32, 'hour'),
+										locale: {
+											format: 'M/DD hh:mm A'
+										}
+									});
+								});
+							</script> -->
+							<div class="col-md-12">
+								<small>Description</small>
+								<textarea name="description" placeholder="Type Something" cols="30" class="form-control"
+									rows="2"></textarea>
+								<br>
+							</div>
+						</div>
+						<input type="submit" class="btn btn-primary w-100" value="Create Issue">
+					</form>
+				</div>
+				<!-- modal footer -->
+			</div>
+		</div>
+	</div>
+
+	<!------------------------------------modal popup to edit workspace name ------------------------------------->
+	<div class="modal" id="editworkspace">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Edit Workspace</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<small>Workspace Name</small>
+					<input type="text" class="form-control">
+					<br>
+					<small>Workspace URL</small>
+					<input type="text" class="form-control">
+					<br>
+					<button type="button" class="btn btn-default bg-gradient-success text-white pull-right">Save
+						Changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-------------------------------------The Modal to Update workspace---------------------------------- -->
+
+	<!-- end change prority status -->
+
+	<!------------------------script/style for header tab & panel data--------------------------------- -->
+	<script>
+		function opennavbartabs(evt, navtabName) {
+			var i, tabcontent, tablinks;
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+				tabcontent[i].style.display = "none";
+			}
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+			document.getElementById(navtabName).style.display = "block";
+			evt.currentTarget.className += " active";
+		}
+
+		// Get the element with id="defaultOpen" and click on it
+		document.getElementById("defaultOpen").click();
+	</script>
+
+	<!--------------------------------------settings tab section style/script---------------------------------- -->
+	<script>
+		function opensettingtab_section(evt, setting_contentName) {
+			var i, settingtabcontent, settingtablinks;
+			settingtabcontent = document.getElementsByClassName("settingtabcontent");
+			for (i = 0; i < settingtabcontent.length; i++) {
+				settingtabcontent[i].style.display = "none";
+			}
+			settingtablinks = document.getElementsByClassName("settingtablinks");
+			for (i = 0; i < settingtablinks.length; i++) {
+				settingtablinks[i].className = settingtablinks[i].className.replace(" active", "");
+			}
+			document.getElementById(setting_contentName).style.display = "block";
+			evt.currentTarget.className += " active";
+		}
+
+		// Get the element with id="defaultOpen" and click on it
+		document.getElementById("defaultOpen").click();
+	</script>
+
+	<!-- Bootstrap core JavaScript-->
+	<script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
+	<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+	<!-- 
+	 Core plugin JavaScript -->
+	<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
+
+	<!-- Custom scripts for all pages-->
+	<script src="{% static 'js/dits_management.min.js'%}"></script>
+
+	<script src="{% static 'js/priority_status_change.js'%}"></script>
+	<script src="{% static 'js/priority_status_modify.js'%}"></script>
+	<script src="{% static 'js/task_status_change.js'%}"></script>
+	<script src="{% static 'js/task_info.js'%}"></script>
+	<script src="{% static 'js/base.js' %}"></script>
+	<script>
+		$(function(){
+			if (window.location.href.indexOf("notification") > 0) {
+				$('#hideOnNotifications').hide();
+				$('#hideOnOthers').show();
+			} else {
+				$('#hideOnNotifications').show();
+				$('#hideOnOthers').hide()
+			}
+		});
+	</script>
+	<script>
+		$(window).on('load', function () {
+			$('#loading').delay(1000).fadeOut();
+		})
+	</script>
+	<script>
+		function dismissFunction() {
+			document.getElementById("msg_display").style.display = "none";
+		}
+	</script>
+	<!-- hide sidenavbar on small screen using jquery -->
+	<script type="text/javascript">
+		/* Check width on page load*/
+		if ($(window).width() < 514) {
+			$(document).ready(function () {
+				$('#page-top').addClass('sidebar-toggled');
+			}
+			)};
+			$(window).resize(function () {
+				/*If browser resized, check width again */
+				if ($(window).width() < 514) {
+					$('#page-top').addClass('sidebar-toggled');
+				}
+				else { $('#page-top').removeClass('sidebar-toggled'); }
+			});
+	</script>
+</body>
+
+</html>

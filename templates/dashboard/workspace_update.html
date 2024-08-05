@@ -1,0 +1,97 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="card p-4">
+        <h5>Update Workspace - <span class="text-danger font-weight-bold text-capitalize">{{object.name}}</span></h5>
+        <hr>
+        {% if messages %}
+            <ul class="messages list-unstyled" id="msg_display">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }} font-weight-bold p-3 rounded" {% endif %}>
+                        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                        <button type="button" class="close mr-3 mb-2 text-danger font-weight-bold" onclick="dismissFunction()">&times;</button>
+                        <span class="ml-3">{{ message }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="row">
+            <div class="col-lg-12">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <div><label for="planned_start_end_date">Name</label></div>
+                            <div class="input-group mb-3">
+                                <!-- <div class="input-group-prepend">
+                                        <span class="input-group-text" id="planned_start_end_date">
+                                            <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div> -->
+                                <input type="text" class="form-control" name="name" value="{{object.name}}">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Slug</label>
+                            <div class="input-group mb-3">
+                                <!-- <div class="input-group-prepend">
+                                    <span class="input-group-text" id="planned_start_end_date"><i
+                                            class="fa fa-calendar"></i></span>
+                                </div> -->
+                                <input type="text" class="form-control" name="slug" value="{{object.slug}}">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Team</label>
+                            <div class="input-group mb-3">
+                                <!-- <div class="input-group-prepend">
+                                    <span class="input-group-text" id="actual_start_end_date"><i
+                                            class="fa fa-calendar"></i></span>
+                                </div> -->
+                                <select name="team" class="form-control">
+                                    {% for team in teams %}
+                                        <option value="{{team.id}}" {% if team.id == object.team.id %}selected{% endif %}>{{team.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                            <label>Staff Member</label>&nbsp;<small class="text-light bg-dark">&nbsp;(select multiple members using "Shift" + "arrow button")&nbsp;</small>
+                            <div class="input-group mb-3">
+                                <!-- <div class="input-group-prepend">
+                                    <span class="input-group-text" id="actual_start_end_date"><i
+                                            class="fa fa-calendar"></i></span>
+                                </div> -->
+                                <select name="staff" class="form-control" multiple>
+                                    {% for staff in all_staff %}
+                                        <option value="{{staff.id}}" 
+                                        {% for staff_obj in object.staff.all %}
+                                            {% if staff.id == staff_obj.id %} selected {% endif %} 
+                                        {% endfor %}
+                                        class="text-capitalize">{{staff.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+                            <label>Enable / Disable (Workspace)</label>
+                            <div class="mb-3" style="width:40px">
+                                <!-- <div class="input-group-prepend">
+                                    <span class="input-group-text" id="priority"><i class="fa fa-calendar"></i></span>
+                                </div> -->
+                                <input type="checkbox" name="status" {% if object.status == True %}checked{% endif %} class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pull-right mt-2 mb-3"> 
+                        <input type="submit" class="btn btn-default button-33 text-right" value="Update">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

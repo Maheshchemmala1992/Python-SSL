@@ -1,0 +1,9 @@
+asgiref
+Django==3.2.24
+django-crontab
+django-jazzmin
+djangorestframework
+mysqlclient
+pillow
+sqlparse
+tzdata

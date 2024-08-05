@@ -1,0 +1,8 @@
+
+1 . In elxir spa Attendence is working
+2 - Expenses Is working
+3 - Client Report Is working
+4 - Make Manager Is working 
+5 -Manage City Is working
+6 - Manage Staff is working
+7 - Mange Attendence Is working

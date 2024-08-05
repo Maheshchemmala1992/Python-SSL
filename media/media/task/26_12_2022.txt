@@ -1,0 +1,14 @@
+Date - 26-12-2022
+
+1 - Images elements do not have explicit and Heoght
+2 - All images convertd into webp
+3 - Alt tag having name field added
+4 - image tag having name field added 
+5 - added name attribute added in a tag
+6- added name attribute in all buttons
+
+ 7 - Fix Category according content in around me 
+
+8- fix sitemap and robot.txt file 
+
+Metting and overall project testing .

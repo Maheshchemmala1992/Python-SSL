@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- font awesome cdn -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- custom css -->
+    <link rel="stylesheet" href="{%static 'css/style.css'%}">
+    <style>
+        /* login window */
+        #login_window label {
+            font-size: 14px;
+            font-weight: 600;
+            padding-bottom: 0px;
+        }
+
+        #login_window ::placeholder {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.5;
+        }
+
+        #login_window .container-fluid {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #login_window {
+            margin: 5% auto;
+            min-width: 280px;
+            max-width:600px;
+            height: 450px;
+            padding: 50px;
+            background: #fff;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+        }
+
+        #login_window hr {
+            border-color: orange;
+        }
+
+        #login_window p {
+            color: #aaa
+        }
+
+
+        /* register window */
+        #register_window {
+            display: none;
+            margin: 2% auto;
+            min-width: 280px;
+            max-width:600px;
+            /* height: 650px; */
+            padding: 50px;
+            background: #fff;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+        }
+
+        #register_window p {
+            color: #aaa
+        }
+
+        #register_window hr {
+            border-color: orange;
+        }
+
+        #register_window label {
+            font-size: 14px;
+            font-weight: 600;
+            padding-bottom: 0px;
+        }
+
+        #register_window ::placeholder {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.5;
+        }
+
+        #register_window .container-fluid {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #loading {
+            position: fixed;
+            display: block;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            text-align: center;
+            background-color: rgb(255, 255, 255);
+            z-index: 99;
+        }
+
+        #loading-image {
+            position: absolute;
+            top: 6%;
+            left: 20%;
+            z-index: 100;
+        }        
+    </style>
+</head>
+
+<body>
+    <div id="loading">
+        <img id="loading-image" src="https://i.pinimg.com/originals/ac/14/0a/ac140a627af854f14c7f653efd7d53ae.gif" alt="Loading..." />
+    </div>	
+    <!-- registration form -->
+    <div class="container mt-3 ">
+        <h3 class="text-center">Welcome To DITS Management</h3>
+        <p class="text-center">Complete your account details</p>
+        <hr>
+        {% if messages %}
+            <ul class="messages list-unstyled" id="msg_display">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }} font-weight-bold p-3 rounded" {% endif %}>
+                        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                        <button type="button" class="close mr-3 mb-2 text-danger font-weight-bold" onclick="dismissFunction()">&times;</button>
+                        <span class="ml-3">{{ message }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- signup part here -->
+        <div id="register_window">
+            <form method="POST" action="{% url 'signup' %}" class="mb-4" id="register_window_id">
+                {% csrf_token %}
+                <label for="id_name">User Name:*</label>
+                <input type="text" name="name" class="form-control" maxlength="120" required id="id_name">
+                <label for="id_email" class="mt-2">Email:*</label>
+                <input type="text" name="email" class="form-control" maxlength="100" required id="id_email">
+                <label for="id_password" class="mt-2">Password:*</label>
+                <input type="password" name="password" class="form-control" maxlength="100" required id="id_password">
+                <!-- <label for="id_team" class="mt-2">Team:</label> -->
+                <!-- <select name="team" id="id_team" class="form-control">
+                    <option value="">Please select</option>
+                    {% for team in teams %}
+                        <option value="{{team.id}}">{{team.name}}</option>
+                    {% endfor %}
+                </select> -->
+                <br>
+                <input type="submit" class="btn btn-primary w-100" value="SIGN UP">
+            </form>
+            <p class="text-left mt-4 mb-2">Already have an account ?
+                <a id="signin_btn" href="#" class="btn btn-outline-primary btn-sm ml-1"> Log In</a>
+            </p>
+        </div>
+
+        <!-- login part here -->
+        <div class="" id="login_window">
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <label for="id_email">Email/User Name:*</label>
+                <input type="text" name="email_temp" class="form-control" maxlength="100" required id="id_email" value="{% if request.GET.name %}{{request.GET.name}}{% endif %}">
+                <label for="id_password" class="mt-3">Password:*</label>
+                <input type="password" name="pass_temp" class="form-control" maxlength="100" required id="id_password" value="{% if request.GET.pwd %}{{request.GET.pwd}}{% endif %}">
+                <br>
+                <input type="submit" class="btn btn-primary w-100" value="LOGIN">
+            </form>
+            <p class="text-left mt-4">Don't have an account ?
+                <a id="signup_btn" href="#" class="btn btn-outline-primary btn-sm ml-1">Sign up</a>
+            </p>
+            <a href="{% url 'forget_password' %}" class="text-primary">Forgot password ?</a>
+            
+        </div>
+    </div>
+    <script>
+        $("#signup_btn").click(function () {
+            $("#login_window").hide();
+            $("#register_window").show();
+        });
+
+        $("#signin_btn").click(function () {
+            $("#login_window").show();
+            $("#register_window").hide();
+        });
+    </script>
+    <script>
+        $(window).on('load', function () {
+          $('#loading').delay(800).fadeOut();
+        })
+    </script>    
+<script>
+	function dismissFunction() {
+	  document.getElementById("msg_display").style.display = "none";
+	}
+</script>    
+</body>
+
+</html>
